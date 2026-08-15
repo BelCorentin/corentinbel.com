@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corentin Bel</title>
+<meta name="description" content="Corentin Bel — brain decoding researcher. Lab, about, art.">
+<style>
+  :root {
+    --bg: #07080c;
+    --fg: #e8e6df;
+    --dim: #8a8fa3;
+    --accent: #6ea8ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: ui-sans-serif, system-ui, "Inter", "Helvetica Neue", sans-serif;
+    overflow: hidden;
+  }
+  canvas#net { position: fixed; inset: 0; z-index: 0; }
+  main {
+    position: relative; z-index: 1;
+    height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 3rem; padding: 2rem;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+  }
+  h1 b { font-weight: 600; }
+  p.tag { color: var(--dim); font-size: 1.05rem; max-width: 34rem; line-height: 1.6; }
+  nav { display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center; }
+  nav a {
+    display: block;
+    padding: 1.1rem 1.9rem;
+    border: 1px solid #2a2e3d;
+    border-radius: 12px;
+    color: var(--fg);
+    text-decoration: none;
+    background: rgba(13, 15, 22, 0.55);
+    backdrop-filter: blur(6px);
+    transition: border-color .25s, transform .25s, box-shadow .25s;
+    min-width: 11rem;
+  }
+  nav a:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(110, 168, 255, 0.12);
+  }
+  nav a .name { font-size: 1.15rem; font-weight: 500; }
+  nav a .desc { color: var(--dim); font-size: .85rem; margin-top: .35rem; }
+  footer {
+    position: fixed; bottom: 1.2rem; width: 100%;
+    text-align: center; color: #4a4f61; font-size: .8rem; z-index: 1;
+  }
+  footer a { color: #4a4f61; }
+</style>
+</head>
+<body>
+<canvas id="net"></canvas>
+<main>
+  <div>
+    <h1>Corentin <b>Bel</b></h1>
+    <p class="tag">Decoding language from brain activity — MEG, fMRI, imagined speech.
+    This is my playground.</p>
+  </div>
+  <nav>
+    <a href="https://lab.corentinbel.com">
+      <div class="name">lab</div>
+      <div class="desc">experiments &amp; brain visualisations</div>
+    </a>
+    <a href="https://aboutme.corentinbel.com">
+      <div class="name">about me</div>
+      <div class="desc">who I am, what I do</div>
+    </a>
+    <a href="https://art.corentinbel.com">
+      <div class="name">art</div>
+      <div class="desc">generative playthings</div>
+    </a>
+  </nav>
+</main>
+<footer>corentinbel.com · <a href="mailto:corentin@corentinbel.com">corentin@corentinbel.com</a></footer>
+<script>
+// Synapse net: drifting nodes, proximity edges, firing pulses that travel along edges.
+const cv = document.getElementById('net');
+const ctx = cv.getContext('2d');
+let W, H, nodes = [], pulses = [];
+const N = 90, LINK = 150;
+
+function resize() {
+  W = cv.width = innerWidth * devicePixelRatio;
+  H = cv.height = innerHeight * devicePixelRatio;
+}
+addEventListener('resize', resize); resize();
+
+for (let i = 0; i < N; i++) {
+  nodes.push({
+    x: Math.random() * W, y: Math.random() * H,
+    vx: (Math.random() - .5) * .18 * devicePixelRatio,
+    vy: (Math.random() - .5) * .18 * devicePixelRatio,
+    r: (Math.random() * 1.4 + .8) * devicePixelRatio
+  });
+}
+
+function fire() {
+  // pick a random node, send a pulse to one neighbour
+  const a = nodes[(Math.random() * N) | 0];
+  let best = null, bd = 1e9;
+  for (const b of nodes) {
+    if (b === a) continue;
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    if (d < bd && d < LINK * devicePixelRatio) { bd = d; best = b; }
+  }
+  if (best) pulses.push({ a, b: best, t: 0 });
+  setTimeout(fire, 120 + Math.random() * 500);
+}
+fire();
+
+function step() {
+  ctx.clearRect(0, 0, W, H);
+  const L = LINK * devicePixelRatio;
+  for (const n of nodes) {
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > W) n.vx *= -1;
+    if (n.y < 0 || n.y > H) n.vy *= -1;
+  }
+  ctx.lineWidth = devicePixelRatio * 0.6;
+  for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
+    const a = nodes[i], b = nodes[j];
+    const d = Math.hypot(a.x - b.x, a.y - b.y);
+    if (d < L) {
+      ctx.strokeStyle = `rgba(110,168,255,${(1 - d / L) * 0.14})`;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+  }
+  for (const n of nodes) {
+    ctx.fillStyle = 'rgba(232,230,223,0.55)';
+    ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 7); ctx.fill();
+  }
+  pulses = pulses.filter(p => p.t < 1);
+  for (const p of pulses) {
+    p.t += 0.03;
+    const x = p.a.x + (p.b.x - p.a.x) * p.t;
+    const y = p.a.y + (p.b.y - p.a.y) * p.t;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, 9 * devicePixelRatio);
+    g.addColorStop(0, 'rgba(140,190,255,0.9)');
+    g.addColorStop(1, 'rgba(140,190,255,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x, y, 9 * devicePixelRatio, 0, 7); ctx.fill();
+  }
+  requestAnimationFrame(step);
+}
+step();
+</script>
+</body>
+</html>
