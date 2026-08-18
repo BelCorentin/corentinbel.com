@@ -4,13 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Corentin Bel</title>
-<meta name="description" content="Corentin Bel — brain decoding researcher. Lab, about, art.">
+<meta name="description" content="Corentin Bel — five creatures, five corners of my internet. Catch one.">
 <style>
   :root {
     --bg: #07080c;
     --fg: #e8e6df;
     --dim: #8a8fa3;
     --accent: #6ea8ff;
+    --purple: #b48ce8;
+    --teal: #8ceedd;
+    --amber: #ffc46b;
+    --coral: #ff9d7a;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
@@ -19,145 +23,812 @@
     color: var(--fg);
     font-family: ui-sans-serif, system-ui, "Inter", "Helvetica Neue", sans-serif;
     overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
   }
-  canvas#net { position: fixed; inset: 0; z-index: 0; }
-  main {
-    position: relative; z-index: 1;
-    height: 100%;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 3rem; padding: 2rem;
-    text-align: center;
+
+  /* ---------- ambience layers ---------- */
+  .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .aurora div {
+    position: absolute; width: 55vmax; height: 55vmax; border-radius: 50%;
+    filter: blur(70px); opacity: .16; will-change: transform;
   }
-  h1 {
-    font-size: clamp(2.2rem, 6vw, 4rem);
-    font-weight: 300;
-    letter-spacing: 0.04em;
+  .aurora .a1 { left: -12vmax; top: -18vmax; background: radial-gradient(circle at 40% 40%, var(--accent), transparent 65%); animation: drift1 47s ease-in-out infinite alternate; }
+  .aurora .a2 { right: -16vmax; top: 8vmax; background: radial-gradient(circle at 55% 45%, var(--purple), transparent 65%); animation: drift2 61s ease-in-out infinite alternate; }
+  .aurora .a3 { left: 22vw; bottom: -26vmax; background: radial-gradient(circle at 50% 35%, var(--teal), transparent 65%); animation: drift3 53s ease-in-out infinite alternate; }
+  @keyframes drift1 { to { transform: translate(14vw, 10vh) scale(1.15); } }
+  @keyframes drift2 { to { transform: translate(-12vw, 14vh) scale(0.9); } }
+  @keyframes drift3 { to { transform: translate(10vw, -12vh) scale(1.1); } }
+
+  canvas#fx { position: fixed; inset: 0; z-index: 1; width: 100%; height: 100%; display: block; pointer-events: none; }
+
+  /* ---------- header / footer ---------- */
+  header {
+    position: fixed; top: 1.3rem; left: 1.6rem; z-index: 5; pointer-events: none;
   }
-  h1 b { font-weight: 600; }
-  p.tag { color: var(--dim); font-size: 1.05rem; max-width: 34rem; line-height: 1.6; }
-  nav { display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center; }
-  nav a {
-    display: block;
-    padding: 1.1rem 1.9rem;
-    border: 1px solid #2a2e3d;
-    border-radius: 12px;
-    color: var(--fg);
-    text-decoration: none;
-    background: rgba(13, 15, 22, 0.55);
-    backdrop-filter: blur(6px);
-    transition: border-color .25s, transform .25s, box-shadow .25s;
-    min-width: 11rem;
-  }
-  nav a:hover {
-    border-color: var(--accent);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(110, 168, 255, 0.12);
-  }
-  nav a .name { font-size: 1.15rem; font-weight: 500; }
-  nav a .desc { color: var(--dim); font-size: .85rem; margin-top: .35rem; }
+  header h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: .05em; }
+  header p { color: var(--dim); font-size: .84rem; margin-top: .25rem; max-width: 30rem; line-height: 1.5; }
   footer {
-    position: fixed; bottom: 1.2rem; width: 100%;
-    text-align: center; color: #4a4f61; font-size: .8rem; z-index: 1;
+    position: fixed; bottom: .65rem; width: 100%; text-align: center;
+    color: #4a4f61; font-size: .78rem; z-index: 6;
   }
-  footer a { color: #4a4f61; }
+  footer a { color: #6a7089; text-decoration: none; padding: .2rem .15rem; }
+  footer a:hover, footer a:focus-visible { color: var(--fg); text-decoration: underline; }
+
+  /* ---------- field & creatures ---------- */
+  #field {
+    position: fixed; inset: 0; z-index: 2;
+    user-select: none; -webkit-user-select: none;
+  }
+  .creature {
+    color: var(--fg); text-decoration: none; cursor: pointer;
+    touch-action: manipulation;
+  }
+  .creature svg { overflow: visible; display: block; transition: transform .25s ease, filter .3s ease; }
+  .creature .tag {
+    position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%) translateY(4px); white-space: nowrap;
+    font-size: .82rem; font-weight: 500; letter-spacing: .03em;
+    padding: .3rem .7rem; border-radius: 99px;
+    background: rgba(13, 15, 22, .82); border: 1px solid var(--hue, var(--accent));
+    box-shadow: 0 4px 18px rgba(0,0,0,.4);
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .creature:hover .tag, .creature:focus-visible .tag,
+  .creature.armed .tag, .creature.excited .tag {
+    opacity: 1; transform: translateX(-50%) translateY(0);
+  }
+  .creature:focus-visible { outline: 2px solid var(--hue, var(--accent)); outline-offset: 6px; border-radius: 14px; }
+
+  /* --- interactive (play) mode --- */
+  body.play #field { display: block; }
+  body.play .creature {
+    position: absolute; left: 0; top: 0; will-change: transform;
+  }
+  body.play .creature .inner { display: block; position: relative; will-change: transform; }
+  body.play .creature:hover svg, body.play .creature:focus-visible svg {
+    transform: scale(1.14); animation: wiggle .5s ease;
+    filter: drop-shadow(0 0 16px var(--hue, var(--accent)));
+  }
+  body.play .creature.excited svg { filter: drop-shadow(0 0 14px var(--hue, var(--accent))); }
+  @keyframes wiggle {
+    0%,100% { transform: scale(1.14) rotate(0); }
+    25% { transform: scale(1.16) rotate(-6deg); }
+    65% { transform: scale(1.16) rotate(5deg); }
+  }
+
+  /* --- static / reduced-motion / no-JS fallback: neat grid of cards --- */
+  body:not(.play) #field {
+    position: fixed; inset: 0;
+    display: flex; flex-wrap: wrap; gap: 1.2rem;
+    align-items: center; justify-content: center; align-content: center;
+    padding: 6.5rem 1.4rem 4rem;
+  }
+  body:not(.play) .creature {
+    display: flex; flex-direction: column; align-items: center; gap: .8rem;
+    padding: 1.3rem 1.5rem 1.1rem; min-width: 10.2rem;
+    border: 1px solid #262b3d; border-radius: 16px;
+    background: rgba(14, 16, 24, .6);
+    transition: border-color .25s, transform .25s;
+  }
+  body:not(.play) .creature:hover, body:not(.play) .creature:focus-visible {
+    border-color: var(--hue, var(--accent)); transform: translateY(-3px);
+  }
+  body:not(.play) .creature .tag {
+    position: static; opacity: 1; transform: none; border-color: transparent;
+    background: none; box-shadow: none; padding: 0;
+  }
+  body:not(.play) #tray, body:not(.play) canvas#fx { display: none; }
+  body:not(.play) .aurora div { animation: none; }
+  body:not(.play) svg .anim { animation: none !important; }
+
+  /* per-creature hue variables */
+  #cr-mouse  { --hue: var(--coral); }
+  #cr-jelly  { --hue: var(--purple); }
+  #cr-bird   { --hue: var(--teal); }
+  #cr-petrel { --hue: var(--accent); }
+  #cr-duck   { --hue: var(--amber); }
+
+  /* ---------- SVG idle animations ---------- */
+  .creature svg .anim { transform-box: fill-box; transform-origin: center; }
+  .eye     { animation: blink 4.6s infinite; }
+  .m-tail  { transform-origin: right center; animation: tailWig 2.3s ease-in-out infinite; }
+  .bell    { animation: pulse 2.8s ease-in-out infinite; }
+  .tend    { transform-origin: center top; animation: sway 3.4s ease-in-out infinite; }
+  .t2 { animation-delay: -.6s; } .t3 { animation-delay: -1.2s; }
+  .t4 { animation-delay: -1.9s; } .t5 { animation-delay: -2.5s; }
+  .wing    { transform-origin: 30% 20%; animation: flap 1.05s ease-in-out infinite; }
+  .gwing-l { transform-origin: right center; animation: gtilt 2.6s ease-in-out infinite; }
+  .gwing-r { transform-origin: left center; animation: gtilt 2.6s ease-in-out infinite reverse; }
+  .bobber  { animation: bob 1.7s ease-in-out infinite; }
+  .spray   { animation: sprayFlick 0.9s ease-in-out infinite; }
+  @keyframes blink { 0%, 91%, 100% { transform: scaleY(1); } 94% { transform: scaleY(.08); } }
+  @keyframes tailWig { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(14deg); } }
+  @keyframes pulse { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.05,.94); } }
+  @keyframes sway { 0%,100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+  @keyframes flap { 0%,100% { transform: rotate(4deg); } 45% { transform: rotate(-26deg); } }
+  @keyframes gtilt { 0%,100% { transform: rotate(3deg); } 50% { transform: rotate(-5deg); } }
+  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-3px) rotate(1.8deg); } }
+  @keyframes sprayFlick { 0%,100% { opacity: .25; } 50% { opacity: .8; } }
+
+  /* ---------- lure tray ---------- */
+  #tray {
+    position: fixed; bottom: 2.1rem; left: 50%; transform: translateX(-50%);
+    z-index: 6; display: flex; gap: .35rem; padding: .5rem .7rem;
+    border-radius: 20px; border: 1px solid rgba(140, 150, 190, .28);
+    background: rgba(16, 18, 28, .55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 10px 40px rgba(0,0,0,.45);
+  }
+  .token {
+    position: relative; border: none; background: none; cursor: grab;
+    font-size: 1.65rem; line-height: 1; padding: .5rem .55rem; border-radius: 14px;
+    touch-action: none; transition: background .2s, transform .15s;
+  }
+  .token:hover, .token:focus-visible { background: rgba(110, 168, 255, .14); transform: translateY(-3px); }
+  .token.picked { background: rgba(180, 140, 232, .25); box-shadow: 0 0 0 1.5px var(--purple); transform: translateY(-4px); }
+  .token .tip {
+    position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
+    white-space: nowrap; font-size: .74rem; font-family: inherit; color: var(--dim);
+    background: rgba(13,15,22,.9); border: 1px solid #2a2e3d; border-radius: 8px;
+    padding: .25rem .55rem; opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .token:hover .tip, .token:focus-visible .tip, .token.picked .tip { opacity: 1; }
+
+  /* ---------- lure on the field + particles ---------- */
+  .lure {
+    position: absolute; z-index: 3; font-size: 1.9rem; line-height: 1;
+    transform: translate(-50%, -50%); pointer-events: none;
+    filter: drop-shadow(0 0 10px rgba(255, 220, 140, .5));
+    animation: lureIn .55s cubic-bezier(.25, 1.6, .5, 1);
+    transition: opacity 2s ease;
+  }
+  .lure.fading { opacity: 0; }
+  @keyframes lureIn {
+    0% { transform: translate(-50%, -180%) scale(.4); opacity: 0; }
+    60% { transform: translate(-50%, -42%) scale(1.15); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+  .pop {
+    position: absolute; z-index: 4; font-size: 1.25rem; font-weight: 700;
+    transform: translate(-50%, -100%); pointer-events: none;
+    animation: popUp 1s ease-out forwards;
+    text-shadow: 0 2px 10px rgba(0,0,0,.6);
+  }
+  @keyframes popUp {
+    0% { opacity: 0; margin-top: 0; }
+    18% { opacity: 1; }
+    100% { opacity: 0; margin-top: -34px; }
+  }
+  #ghost {
+    position: fixed; z-index: 9; font-size: 1.9rem; line-height: 1;
+    transform: translate(-50%, -50%); pointer-events: none; display: none;
+    filter: drop-shadow(0 4px 14px rgba(0,0,0,.5));
+  }
+
+  @media (max-width: 560px) {
+    header { left: 1.1rem; right: 1.1rem; }
+    header p { font-size: .78rem; }
+    .token { font-size: 1.45rem; }
+    footer { font-size: .72rem; }
+  }
 </style>
 </head>
 <body>
-<canvas id="net"></canvas>
-<main>
-  <div>
-    <h1>Corentin <b>Bel</b></h1>
-    <p class="tag">Decoding language from brain activity — MEG, fMRI, imagined speech.
-    This is my playground.</p>
-  </div>
-  <nav>
-    <a href="https://lab.corentinbel.com">
-      <div class="name">lab</div>
-      <div class="desc">experiments &amp; brain visualisations</div>
-    </a>
-    <a href="https://aboutme.corentinbel.com">
-      <div class="name">about me</div>
-      <div class="desc">who I am, what I do</div>
-    </a>
-    <a href="https://art.corentinbel.com">
-      <div class="name">art</div>
-      <div class="desc">generative playthings</div>
-    </a>
-  </nav>
-</main>
-<footer>corentinbel.com · <a href="mailto:corentin@corentinbel.com">corentin@corentinbel.com</a></footer>
+
+<div class="aurora" aria-hidden="true"><div class="a1"></div><div class="a2"></div><div class="a3"></div></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<header>
+  <h1>corentin bel</h1>
+  <p>five creatures, five corners of my internet — catch one</p>
+</header>
+
+<div id="field">
+
+  <a class="creature" id="cr-mouse" href="https://aboutme.corentinbel.com" aria-label="about me — aboutme.corentinbel.com" draggable="false">
+    <span class="inner">
+      <svg width="76" height="62" viewBox="0 0 110 90" aria-hidden="true">
+        <defs>
+          <linearGradient id="g-mouse" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffb08a"/><stop offset="1" stop-color="#ff7d9d"/>
+          </linearGradient>
+        </defs>
+        <path class="anim m-tail" d="M16 62 Q-4 60 3 44 Q6 37 12 38" fill="none" stroke="#ff9d7a" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="40" cy="24" r="13" fill="url(#g-mouse)"/>
+        <circle cx="40" cy="24" r="6.5" fill="#ffd9c9" opacity=".85"/>
+        <circle cx="72" cy="18" r="12" fill="url(#g-mouse)"/>
+        <circle cx="72" cy="18" r="6" fill="#ffd9c9" opacity=".85"/>
+        <path d="M16 58 Q15 33 44 29 Q80 23 97 47 Q101 55 93 61 Q62 79 31 74 Q16 70 16 58 Z" fill="url(#g-mouse)"/>
+        <ellipse class="anim eye" cx="72" cy="42" rx="3.4" ry="4" fill="#241521"/>
+        <ellipse class="anim eye" cx="87" cy="45" rx="2.9" ry="3.5" fill="#241521"/>
+        <circle cx="99" cy="52" r="4" fill="#ff5d73"/>
+        <path d="M96 54 L108 48 M97 57 L110 56 M96 60 L107 65" stroke="#ffd9c9" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+      </svg>
+      <span class="tag">about me</span>
+    </span>
+  </a>
+
+  <a class="creature" id="cr-jelly" href="https://lab.corentinbel.com" aria-label="the lab — lab.corentinbel.com" draggable="false">
+    <span class="inner">
+      <svg width="86" height="90" viewBox="0 0 110 115" aria-hidden="true">
+        <defs>
+          <radialGradient id="g-jelly" cx="50%" cy="35%" r="75%">
+            <stop offset="0" stop-color="#e3d0ff"/><stop offset=".55" stop-color="#b48ce8"/><stop offset="1" stop-color="#6ea8ff"/>
+          </radialGradient>
+        </defs>
+        <g>
+          <path class="anim tend t1" d="M28 66 q-6 14 1 25 q5 9 -2 18" fill="none" stroke="#8ceedd" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
+          <path class="anim tend t2" d="M42 70 q-3 15 3 26 q4 8 -1 15" fill="none" stroke="#b48ce8" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
+          <path class="anim tend t3" d="M55 72 q-2 16 2 27 q3 8 -2 14" fill="none" stroke="#8ceedd" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
+          <path class="anim tend t4" d="M68 70 q3 15 -2 26 q-4 8 2 15" fill="none" stroke="#b48ce8" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
+          <path class="anim tend t5" d="M82 66 q6 14 0 25 q-5 9 3 18" fill="none" stroke="#8ceedd" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
+        </g>
+        <g class="anim bell">
+          <path d="M18 62 Q16 18 55 14 Q94 18 92 62 Q74 74 55 72 Q36 74 18 62 Z" fill="url(#g-jelly)"/>
+          <path d="M28 40 q7 -9 13 0 q6 9 12 0 q6 -9 12 0 q6 9 13 0" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M32 52 q6 -7 11 0 q5 7 11 0 q5 -7 11 0 q5 7 11 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2.2" stroke-linecap="round"/>
+          <ellipse class="anim eye" cx="44" cy="60" rx="3" ry="3.6" fill="#241533"/>
+          <ellipse class="anim eye" cx="64" cy="60" rx="3" ry="3.6" fill="#241533"/>
+          <path d="M50 66 q4 3.5 8 0" fill="none" stroke="#241533" stroke-width="2" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <span class="tag">the lab</span>
+    </span>
+  </a>
+
+  <a class="creature" id="cr-bird" href="https://art.corentinbel.com" aria-label="art — art.corentinbel.com" draggable="false">
+    <span class="inner">
+      <svg width="66" height="58" viewBox="0 0 110 96" aria-hidden="true">
+        <defs>
+          <linearGradient id="g-bird" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#9ff0d9"/><stop offset="1" stop-color="#58c4e8"/>
+          </linearGradient>
+          <linearGradient id="g-bwing" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#b48ce8"/><stop offset="1" stop-color="#8ceedd"/>
+          </linearGradient>
+        </defs>
+        <path d="M20 50 L4 38 L12 52 L2 60 L20 58 Z" fill="url(#g-bwing)" opacity=".9"/>
+        <path d="M16 56 Q14 26 48 22 Q84 18 94 44 Q98 56 88 64 Q60 82 30 72 Q16 66 16 56 Z" fill="url(#g-bird)"/>
+        <circle cx="78" cy="34" r="17" fill="url(#g-bird)"/>
+        <path d="M93 32 L108 36 L93 41 Z" fill="#ffc46b"/>
+        <ellipse class="anim eye" cx="80" cy="31" rx="3.2" ry="3.8" fill="#13202b"/>
+        <path d="M60 66 q8 6 18 3" fill="none" stroke="#ffc46b" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+        <path class="anim wing" d="M36 42 Q58 30 74 44 Q60 62 40 58 Q30 52 36 42 Z" fill="url(#g-bwing)"/>
+        <path d="M44 76 l-2 12 M56 76 l2 12" stroke="#ffc46b" stroke-width="2.6" stroke-linecap="round"/>
+      </svg>
+      <span class="tag">art</span>
+    </span>
+  </a>
+
+  <a class="creature" id="cr-petrel" href="https://wind.corentinbel.com" aria-label="live wind — wind.corentinbel.com" draggable="false">
+    <span class="inner">
+      <svg width="98" height="48" viewBox="0 0 150 74" aria-hidden="true">
+        <defs>
+          <linearGradient id="g-gull" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f6f9ff"/><stop offset="1" stop-color="#a9c6ff"/>
+          </linearGradient>
+          <linearGradient id="g-gwing" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#6ea8ff"/><stop offset="1" stop-color="#dbe8ff"/>
+          </linearGradient>
+        </defs>
+        <path class="anim gwing-l" d="M62 38 Q34 12 4 20 Q26 30 44 44 Q54 48 62 44 Z" fill="url(#g-gwing)"/>
+        <path class="anim gwing-r" d="M88 38 Q116 12 146 20 Q124 30 106 44 Q96 48 88 44 Z" fill="url(#g-gwing)"/>
+        <path d="M50 44 Q52 30 75 28 Q98 30 102 42 Q104 50 96 54 Q76 62 56 54 Q48 50 50 44 Z" fill="url(#g-gull)"/>
+        <circle cx="96" cy="36" r="12" fill="url(#g-gull)"/>
+        <path d="M106 34 L120 37 L106 41 Z" fill="#ffc46b"/>
+        <ellipse class="anim eye" cx="98" cy="33" rx="2.6" ry="3.1" fill="#1a2233"/>
+        <path d="M50 48 L38 56 L52 54 Z" fill="#a9c6ff"/>
+      </svg>
+      <span class="tag">live wind</span>
+    </span>
+  </a>
+
+  <a class="creature" id="cr-duck" href="https://downthewind.com" aria-label="downthewind — downthewind.com" draggable="false">
+    <span class="inner">
+      <svg width="84" height="88" viewBox="0 0 120 126" aria-hidden="true">
+        <defs>
+          <linearGradient id="g-duck" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffd98a"/><stop offset="1" stop-color="#ff9d5c"/>
+          </linearGradient>
+          <linearGradient id="g-board" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#6ea8ff"/><stop offset="1" stop-color="#8ceedd"/>
+          </linearGradient>
+        </defs>
+        <g class="anim bobber">
+          <path class="anim spray" d="M18 88 q-8 -4 -10 -12 M20 92 q-11 -1 -16 -7" stroke="#8ceedd" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+          <rect x="24" y="82" width="70" height="8" rx="4" fill="url(#g-board)"/>
+          <path d="M58 90 L58 108 M40 108 L82 108 M74 108 L74 114 M64 114 L86 114" stroke="#6ea8ff" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+          <path d="M34 74 Q32 48 58 44 Q88 40 96 60 Q100 72 90 78 Q64 90 42 82 Q34 79 34 74 Z" fill="url(#g-duck)"/>
+          <circle cx="86" cy="38" r="15" fill="url(#g-duck)"/>
+          <path d="M99 35 L116 40 L99 46 Z" fill="#ff7a45"/>
+          <ellipse class="anim eye" cx="88" cy="34" rx="3" ry="3.6" fill="#33200f"/>
+          <path d="M50 64 Q64 56 74 66 Q64 76 52 72 Q46 68 50 64 Z" fill="#ffb066" opacity=".9"/>
+        </g>
+      </svg>
+      <span class="tag">downthewind</span>
+    </span>
+  </a>
+
+</div>
+
+<div id="tray" aria-label="lures — drag one onto the field">
+  <button type="button" class="token" data-lure="cheese" aria-label="cheese lure"><span aria-hidden="true">🧀</span><span class="tip">who likes cheese?</span></button>
+  <button type="button" class="token" data-lure="wave" aria-label="wave lure"><span aria-hidden="true">🌊</span><span class="tip">who likes waves?</span></button>
+  <button type="button" class="token" data-lure="piano" aria-label="piano lure"><span aria-hidden="true">🎹</span><span class="tip">who likes piano?</span></button>
+  <button type="button" class="token" data-lure="gust" aria-label="gust lure"><span aria-hidden="true">💨</span><span class="tip">who likes a breeze?</span></button>
+  <button type="button" class="token" data-lure="baguette" aria-label="baguette lure"><span aria-hidden="true">🥖</span><span class="tip">who likes baguettes?</span></button>
+</div>
+
+<div id="ghost" aria-hidden="true"></div>
+
+<footer>
+  <a href="https://aboutme.corentinbel.com">about me</a> ·
+  <a href="https://lab.corentinbel.com">lab</a> ·
+  <a href="https://art.corentinbel.com">art</a> ·
+  <a href="https://wind.corentinbel.com">wind</a> ·
+  <a href="https://downthewind.com">downthewind</a>
+</footer>
+
 <script>
-// Synapse net: drifting nodes, proximity edges, firing pulses that travel along edges.
-const cv = document.getElementById('net');
-const ctx = cv.getContext('2d');
-let W, H, nodes = [], pulses = [];
-const N = 90, LINK = 150;
+(function () {
+  'use strict';
 
-function resize() {
-  W = cv.width = innerWidth * devicePixelRatio;
-  H = cv.height = innerHeight * devicePixelRatio;
-}
-addEventListener('resize', resize); resize();
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var body = document.body;
+  var field = document.getElementById('field');
+  var canvas = document.getElementById('fx');
+  var ghost = document.getElementById('ghost');
+  var ctx = canvas.getContext('2d');
 
-for (let i = 0; i < N; i++) {
-  nodes.push({
-    x: Math.random() * W, y: Math.random() * H,
-    vx: (Math.random() - .5) * .18 * devicePixelRatio,
-    vy: (Math.random() - .5) * .18 * devicePixelRatio,
-    r: (Math.random() * 1.4 + .8) * devicePixelRatio
-  });
-}
+  var LURE_EMOJI = { cheese: '\u{1F9C0}', wave: '\u{1F30A}', piano: '\u{1F3B9}', gust: '\u{1F4A8}', baguette: '\u{1F956}' };
 
-function fire() {
-  // pick a random node, send a pulse to one neighbour
-  const a = nodes[(Math.random() * N) | 0];
-  let best = null, bd = 1e9;
-  for (const b of nodes) {
-    if (b === a) continue;
-    const d = Math.hypot(a.x - b.x, a.y - b.y);
-    if (d < bd && d < LINK * devicePixelRatio) { bd = d; best = b; }
+  var SPECIES = [
+    { id: 'cr-mouse',  lure: 'cheese',   speed: 62, shy: 0.65, cur: 0.30, rgb: [255, 157, 122], f1: 0.9,  f2: 1.7  },
+    { id: 'cr-jelly',  lure: 'wave',     speed: 26, shy: 0.08, cur: 0.50, rgb: [180, 140, 232], f1: 0.35, f2: 0.6, sway: true },
+    { id: 'cr-bird',   lure: 'piano',    speed: 74, shy: 0.50, cur: 0.55, rgb: [140, 238, 221], f1: 1.1,  f2: 2.1  },
+    { id: 'cr-petrel', lure: 'gust',     speed: 96, shy: 0.18, cur: 0.20, rgb: [110, 168, 255], f1: 0.35, f2: 0.75 },
+    { id: 'cr-duck',   lure: 'baguette', speed: 52, shy: 0.12, cur: 0.70, rgb: [255, 196, 107], f1: 0.7,  f2: 1.3  }
+  ];
+
+  var creatures = [];
+  var W = 0, H = 0, DPR = 1;
+  var pointer = { x: -9999, y: -9999, seen: false };
+  var lastPointerType = 'mouse';
+  var lure = null;             // { el, x, y, type, born }
+  var dust = [];
+  var sparks = [];
+  var running = false;
+  var rafId = 0;
+  var last = 0;
+
+  // ---------- helpers ----------
+  function rand(a, b) { return a + Math.random() * (b - a); }
+  function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+  function dist(ax, ay, bx, by) { var dx = ax - bx, dy = ay - by; return Math.sqrt(dx * dx + dy * dy); }
+
+  function bounds() {
+    return { x0: 50, y0: 110, x1: W - 50, y1: H - 150 };
   }
-  if (best) pulses.push({ a, b: best, t: 0 });
-  setTimeout(fire, 120 + Math.random() * 500);
-}
-fire();
 
-function step() {
-  ctx.clearRect(0, 0, W, H);
-  const L = LINK * devicePixelRatio;
-  for (const n of nodes) {
-    n.x += n.vx; n.y += n.vy;
-    if (n.x < 0 || n.x > W) n.vx *= -1;
-    if (n.y < 0 || n.y > H) n.vy *= -1;
+  function resize() {
+    W = window.innerWidth; H = window.innerHeight;
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    creatures.forEach(function (c) {
+      c.hw = c.el.offsetWidth / 2; c.hh = c.el.offsetHeight / 2;
+      var b = bounds();
+      c.x = clamp(c.x, b.x0, b.x1); c.y = clamp(c.y, b.y0, b.y1);
+    });
   }
-  ctx.lineWidth = devicePixelRatio * 0.6;
-  for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
-    const a = nodes[i], b = nodes[j];
-    const d = Math.hypot(a.x - b.x, a.y - b.y);
-    if (d < L) {
-      ctx.strokeStyle = `rgba(110,168,255,${(1 - d / L) * 0.14})`;
-      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+
+  function spawnPop(x, y, glyph, color) {
+    var p = document.createElement('div');
+    p.className = 'pop';
+    p.textContent = glyph;
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    if (color) p.style.color = color;
+    field.appendChild(p);
+    p.addEventListener('animationend', function () { p.remove(); });
+    setTimeout(function () { p.remove(); }, 1400);
+  }
+
+  // ---------- creatures ----------
+  function initCreatures() {
+    var b = bounds();
+    SPECIES.forEach(function (s, i) {
+      var el = document.getElementById(s.id);
+      var inner = el.querySelector('.inner');
+      var c = {
+        el: el, inner: inner, spec: s,
+        x: rand(b.x0 + 60, b.x1 - 60),
+        y: b.y0 + (b.y1 - b.y0) * ((i + 0.5) / SPECIES.length) * rand(0.7, 1.1),
+        vx: 0, vy: 0,
+        p1: rand(0, 6.28), p2: rand(0, 6.28),
+        bias: rand(0, 6.28),
+        face: 1,
+        mode: 'wander',
+        timer: 0, cool: rand(0, 3),
+        orbitA: rand(0, 6.28),
+        hovered: false, armed: false, armTimer: 0,
+        trail: [],
+        hw: el.offsetWidth / 2, hh: el.offsetHeight / 2
+      };
+      c.y = clamp(c.y, b.y0, b.y1);
+
+      el.addEventListener('pointerenter', function () { c.hovered = true; });
+      el.addEventListener('pointerleave', function () { c.hovered = false; });
+      el.addEventListener('focus', function () { c.hovered = true; });
+      el.addEventListener('blur', function () { c.hovered = false; });
+      el.addEventListener('pointerdown', function (e) { lastPointerType = e.pointerType || 'mouse'; });
+      el.addEventListener('dragstart', function (e) { e.preventDefault(); });
+      // touch: first tap shows the tag, second tap navigates
+      el.addEventListener('click', function (e) {
+        if (lastPointerType === 'touch' && !c.armed) {
+          e.preventDefault();
+          creatures.forEach(function (o) { o.armed = false; o.el.classList.remove('armed'); });
+          c.armed = true; c.armTimer = 3.5;
+          el.classList.add('armed');
+        }
+      });
+      creatures.push(c);
+    });
+  }
+
+  function setMode(c, mode, t) {
+    c.mode = mode;
+    c.timer = t || 0;
+    if (mode === 'orbit') c.el.classList.add('excited');
+    else c.el.classList.remove('excited');
+  }
+
+  function update(c, dt, t) {
+    var s = c.spec;
+    var b = bounds();
+
+    if (c.armed) {
+      c.armTimer -= dt;
+      if (c.armTimer <= 0) { c.armed = false; c.el.classList.remove('armed'); }
+    }
+
+    var tvx = 0, tvy = 0;
+    var pd = pointer.seen ? dist(c.x, c.y, pointer.x, pointer.y) : 1e9;
+
+    if (c.hovered || c.armed) {
+      // never escape a creature the visitor has reached
+      tvx = 0; tvy = 0;
+    } else if (c.mode === 'flee') {
+      c.timer -= dt;
+      var fa = Math.atan2(c.y - pointer.y, c.x - pointer.x);
+      tvx = Math.cos(fa) * s.speed * 1.9;
+      tvy = Math.sin(fa) * s.speed * 1.9;
+      if (c.timer <= 0) { setMode(c, 'wander'); c.cool = rand(5, 9); }
+    } else if (c.mode === 'approach') {
+      c.timer -= dt;
+      if (pd > 90 && pointer.seen) {
+        var aa = Math.atan2(pointer.y - c.y, pointer.x - c.x);
+        tvx = Math.cos(aa) * s.speed * 0.8;
+        tvy = Math.sin(aa) * s.speed * 0.8;
+      }
+      if (c.timer <= 0 || !pointer.seen) { setMode(c, 'wander'); c.cool = rand(4, 8); }
+    } else if (c.mode === 'rush' && lure) {
+      var ld = dist(c.x, c.y, lure.x, lure.y);
+      if (ld < 62) {
+        setMode(c, 'orbit');
+      } else {
+        var ra = Math.atan2(lure.y - c.y, lure.x - c.x);
+        tvx = Math.cos(ra) * s.speed * 2.1;
+        tvy = Math.sin(ra) * s.speed * 2.1;
+      }
+    } else if (c.mode === 'orbit' && lure) {
+      c.orbitA += dt * 1.5;
+      var ox = lure.x + Math.cos(c.orbitA) * 48;
+      var oy = lure.y + Math.sin(c.orbitA) * 40;
+      tvx = (ox - c.x) * 4;
+      tvy = (oy - c.y) * 4;
+      if (Math.random() < 0.1) {
+        sparks.push({ x: c.x + rand(-14, 14), y: c.y + rand(-14, 14), vy: rand(-30, -14), life: 1, rgb: s.rgb });
+      }
+    } else if (c.mode === 'sniff' && lure) {
+      var sd = dist(c.x, c.y, lure.x, lure.y);
+      if (sd < 74) {
+        setMode(c, 'sniffwait', 0.9);
+      } else {
+        var sa = Math.atan2(lure.y - c.y, lure.x - c.x);
+        tvx = Math.cos(sa) * s.speed * 0.9;
+        tvy = Math.sin(sa) * s.speed * 0.9;
+      }
+    } else if (c.mode === 'sniffwait') {
+      c.timer -= dt;
+      if (c.timer <= 0) {
+        spawnPop(c.x, c.y - c.hh - 8, '?', 'rgb(' + s.rgb.join(',') + ')');
+        setMode(c, 'wander');
+        c.cool = rand(3, 5);
+        if (lure) { // stroll off, unimpressed
+          var wa = Math.atan2(c.y - lure.y, c.x - lure.x) + rand(-0.5, 0.5);
+          c.vx = Math.cos(wa) * s.speed; c.vy = Math.sin(wa) * s.speed;
+        }
+      }
+    } else { // wander (also fallback when a lure vanished mid-mode)
+      if (c.mode !== 'wander') setMode(c, 'wander');
+      c.bias += rand(-0.5, 0.5) * dt * 1.6;
+      var na = c.bias + Math.sin(t * s.f1 + c.p1) * 1.3 + Math.sin(t * s.f2 + c.p2) * 0.7;
+      tvx = Math.cos(na) * s.speed;
+      tvy = Math.sin(na) * s.speed;
+
+      // pointer encounter: occasionally flee (shyness) or come look (curiosity)
+      c.cool -= dt;
+      if (pointer.seen && pd < 170 && c.cool <= 0 && !lure) {
+        var roll = Math.random();
+        if (roll < s.shy) setMode(c, 'flee', rand(0.7, 1.2));
+        else if (roll < s.shy + s.cur) setMode(c, 'approach', rand(2.5, 4));
+        else c.cool = rand(2.5, 4);
+      }
+    }
+
+    // soft steering back into bounds
+    if (c.x < b.x0 + 40) tvx += (b.x0 + 40 - c.x) * 2.2;
+    if (c.x > b.x1 - 40) tvx -= (c.x - (b.x1 - 40)) * 2.2;
+    if (c.y < b.y0 + 30) tvy += (b.y0 + 30 - c.y) * 2.2;
+    if (c.y > b.y1 - 30) tvy -= (c.y - (b.y1 - 30)) * 2.2;
+
+    var k = clamp(dt * ((c.mode === 'rush' || c.mode === 'flee') ? 5 : 2.2), 0, 1);
+    c.vx += (tvx - c.vx) * k;
+    c.vy += (tvy - c.vy) * k;
+    c.x = clamp(c.x + c.vx * dt, b.x0, b.x1);
+    c.y = clamp(c.y + c.vy * dt, b.y0, b.y1);
+
+    // trail
+    var sp = Math.sqrt(c.vx * c.vx + c.vy * c.vy);
+    if (sp > 12) c.trail.push({ x: c.x, y: c.y + c.hh * 0.4, life: 1 });
+    if (c.trail.length > 26) c.trail.shift();
+    for (var i = c.trail.length - 1; i >= 0; i--) {
+      c.trail[i].life -= dt * 1.4;
+      if (c.trail[i].life <= 0) c.trail.splice(i, 1);
+    }
+
+    // orientation + squash-and-stretch
+    if (Math.abs(c.vx) > 14) c.face = c.vx >= 0 ? 1 : -1;
+    var sq = clamp(sp / (s.speed * 1.8), 0, 1);
+    var sx = 1 + 0.16 * sq, sy = 1 - 0.12 * sq;
+    var tilt;
+    if (s.sway) { tilt = clamp(c.vx * 0.005, -0.3, 0.3); c.face = 1; }
+    else { tilt = clamp(Math.atan2(c.vy, Math.abs(c.vx) + 20) * 0.55, -0.5, 0.5); }
+
+    c.el.style.transform = 'translate3d(' + (c.x - c.hw).toFixed(1) + 'px,' + (c.y - c.hh).toFixed(1) + 'px,0)';
+    c.inner.style.transform = 'scale(' + (c.face * sx).toFixed(3) + ',' + sy.toFixed(3) + ') rotate(' + tilt.toFixed(3) + 'rad)';
+  }
+
+  // ---------- lures ----------
+  function removeLure(fast) {
+    if (!lure) return;
+    var el = lure.el;
+    clearTimeout(lure.fadeT); clearTimeout(lure.killT);
+    if (fast) el.remove();
+    else { el.classList.add('fading'); setTimeout(function () { el.remove(); }, 2100); }
+    lure = null;
+    creatures.forEach(function (c) {
+      if (c.mode === 'rush' || c.mode === 'orbit' || c.mode === 'sniff' || c.mode === 'sniffwait') setMode(c, 'wander');
+    });
+  }
+
+  function placeLure(type, x, y) {
+    removeLure(true);
+    var b = bounds();
+    x = clamp(x, b.x0 + 20, b.x1 - 20);
+    y = clamp(y, b.y0 + 20, b.y1 - 20);
+    var el = document.createElement('div');
+    el.className = 'lure';
+    el.textContent = LURE_EMOJI[type];
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    field.appendChild(el);
+    lure = { el: el, x: x, y: y, type: type };
+    lure.fadeT = setTimeout(function () { if (lure && lure.el === el) el.classList.add('fading'); }, 13000);
+    lure.killT = setTimeout(function () { if (lure && lure.el === el) removeLure(true); }, 15000);
+
+    var match = null, others = [];
+    creatures.forEach(function (c) {
+      if (c.spec.lure === type) match = c; else others.push(c);
+    });
+    if (match) {
+      spawnPop(match.x, match.y - match.hh - 8, '!', 'rgb(' + match.spec.rgb.join(',') + ')');
+      setMode(match, 'rush');
+    }
+    // comedy: sometimes one wrong creature wanders over, sniffs, leaves
+    if (others.length && Math.random() < 0.35) {
+      var wrong = others[Math.floor(Math.random() * others.length)];
+      setTimeout(function () {
+        if (lure && lure.el === el && wrong.mode === 'wander' && !wrong.hovered) setMode(wrong, 'sniff');
+      }, 900);
     }
   }
-  for (const n of nodes) {
-    ctx.fillStyle = 'rgba(232,230,223,0.55)';
-    ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 7); ctx.fill();
+
+  // ---------- tray: drag OR tap-then-tap ----------
+  var pickedType = null;
+  var drag = null; // { type, id, startX, startY, moved }
+
+  function clearPicked() {
+    pickedType = null;
+    document.querySelectorAll('.token.picked').forEach(function (t) { t.classList.remove('picked'); });
   }
-  pulses = pulses.filter(p => p.t < 1);
-  for (const p of pulses) {
-    p.t += 0.03;
-    const x = p.a.x + (p.b.x - p.a.x) * p.t;
-    const y = p.a.y + (p.b.y - p.a.y) * p.t;
-    const g = ctx.createRadialGradient(x, y, 0, x, y, 9 * devicePixelRatio);
-    g.addColorStop(0, 'rgba(140,190,255,0.9)');
-    g.addColorStop(1, 'rgba(140,190,255,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(x, y, 9 * devicePixelRatio, 0, 7); ctx.fill();
+
+  document.querySelectorAll('.token').forEach(function (btn) {
+    var type = btn.dataset.lure;
+    btn.addEventListener('pointerdown', function (e) {
+      lastPointerType = e.pointerType || 'mouse';
+      e.preventDefault();
+      drag = { type: type, id: e.pointerId, startX: e.clientX, startY: e.clientY, moved: false };
+      try { btn.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    btn.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      if (!drag.moved && dist(e.clientX, e.clientY, drag.startX, drag.startY) > 9) {
+        drag.moved = true;
+        ghost.textContent = LURE_EMOJI[type];
+        ghost.style.display = 'block';
+      }
+      if (drag.moved) {
+        ghost.style.left = e.clientX + 'px';
+        ghost.style.top = e.clientY + 'px';
+      }
+    });
+    btn.addEventListener('pointerup', function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      ghost.style.display = 'none';
+      if (drag.moved) {
+        var trayTop = document.getElementById('tray').getBoundingClientRect().top;
+        if (e.clientY < trayTop - 12) placeLure(type, e.clientX, e.clientY);
+        clearPicked();
+      } else {
+        // tap: pick this lure, next tap on the field drops it
+        if (pickedType === type) clearPicked();
+        else { clearPicked(); pickedType = type; btn.classList.add('picked'); }
+      }
+      drag = null;
+    });
+    btn.addEventListener('pointercancel', function () { ghost.style.display = 'none'; drag = null; });
+  });
+
+  // drop a picked lure on the field
+  document.addEventListener('pointerdown', function (e) {
+    lastPointerType = e.pointerType || 'mouse';
+    if (!pickedType) return;
+    if (e.target.closest('#tray') || e.target.closest('.creature') ||
+        e.target.closest('footer') || e.target.closest('header')) return;
+    placeLure(pickedType, e.clientX, e.clientY);
+    clearPicked();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') clearPicked();
+  });
+  // keyboard: Enter/Space on a token picks it, drop lands mid-field
+  document.querySelectorAll('.token').forEach(function (btn) {
+    btn.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        placeLure(btn.dataset.lure, W / 2, H / 2);
+        clearPicked();
+      }
+    });
+  });
+
+  window.addEventListener('pointermove', function (e) {
+    pointer.x = e.clientX; pointer.y = e.clientY; pointer.seen = true;
+  });
+  window.addEventListener('pointerleave', function () { pointer.seen = false; });
+
+  // ---------- canvas: dust, trails, sparks ----------
+  var PALETTE = [[110, 168, 255], [180, 140, 232], [140, 238, 221], [255, 196, 107], [255, 157, 122]];
+  function initDust() {
+    dust = [];
+    var n = Math.min(56, Math.round(W * H / 26000));
+    for (var i = 0; i < n; i++) {
+      dust.push({
+        x: rand(0, W), y: rand(0, H),
+        vx: rand(-6, 6), vy: rand(-4, 4),
+        r: rand(0.8, 2.2), a: rand(0.12, 0.32),
+        rgb: PALETTE[i % PALETTE.length],
+        ph: rand(0, 6.28)
+      });
+    }
   }
-  requestAnimationFrame(step);
-}
-step();
+
+  function drawFx(dt, t) {
+    ctx.clearRect(0, 0, W, H);
+    // dust
+    for (var i = 0; i < dust.length; i++) {
+      var d = dust[i];
+      d.x += d.vx * dt; d.y += (d.vy + Math.sin(t + d.ph) * 3) * dt;
+      if (d.x < -5) d.x = W + 5; if (d.x > W + 5) d.x = -5;
+      if (d.y < -5) d.y = H + 5; if (d.y > H + 5) d.y = -5;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, 6.2832);
+      ctx.fillStyle = 'rgba(' + d.rgb.join(',') + ',' + (d.a * (0.7 + 0.3 * Math.sin(t * 0.8 + d.ph))).toFixed(3) + ')';
+      ctx.fill();
+    }
+    // creature trails
+    creatures.forEach(function (c) {
+      var rgb = c.spec.rgb.join(',');
+      for (var j = 0; j < c.trail.length; j++) {
+        var p = c.trail[j];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2 + 4 * p.life, 0, 6.2832);
+        ctx.fillStyle = 'rgba(' + rgb + ',' + (0.16 * p.life).toFixed(3) + ')';
+        ctx.fill();
+      }
+    });
+    // sparks
+    for (var s2 = sparks.length - 1; s2 >= 0; s2--) {
+      var sp = sparks[s2];
+      sp.y += sp.vy * dt; sp.life -= dt * 1.3;
+      if (sp.life <= 0) { sparks.splice(s2, 1); continue; }
+      ctx.beginPath();
+      ctx.arc(sp.x, sp.y, 1.6 + sp.life * 1.6, 0, 6.2832);
+      ctx.fillStyle = 'rgba(' + sp.rgb.join(',') + ',' + (0.55 * sp.life).toFixed(3) + ')';
+      ctx.fill();
+    }
+  }
+
+  // ---------- main loop ----------
+  function frame(now) {
+    if (!running) return;
+    var dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    var t = now / 1000;
+    creatures.forEach(function (c) { update(c, dt, t); });
+    drawFx(dt, t);
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    last = performance.now();
+    rafId = requestAnimationFrame(frame);
+  }
+  function stop() {
+    running = false;
+    cancelAnimationFrame(rafId);
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (!body.classList.contains('play')) return;
+    if (document.hidden) stop(); else start();
+  });
+
+  function enterPlay() {
+    body.classList.add('play');
+    resize();
+    if (!creatures.length) initCreatures();
+    resize(); // sizes valid only once absolutely positioned
+    initDust();
+    start();
+  }
+  function exitPlay() {
+    stop();
+    removeLure(true);
+    body.classList.remove('play');
+    creatures.forEach(function (c) {
+      c.el.style.transform = '';
+      c.inner.style.transform = '';
+      c.el.classList.remove('excited', 'armed');
+    });
+    ctx.clearRect(0, 0, W, H);
+  }
+
+  window.addEventListener('resize', function () {
+    if (body.classList.contains('play')) { resize(); initDust(); }
+  });
+
+  function applyMotionPref() {
+    if (reduceMotion.matches) exitPlay(); else enterPlay();
+  }
+  if (reduceMotion.addEventListener) reduceMotion.addEventListener('change', applyMotionPref);
+  applyMotionPref();
+})();
 </script>
 </body>
 </html>
