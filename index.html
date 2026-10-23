@@ -2,833 +2,958 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Corentin Bel</title>
-<meta name="description" content="Corentin Bel — five creatures, five corners of my internet. Catch one.">
+<meta name="description" content="Corentin Bel — neuroscience, foiling, tinkering. Pick something off the shelf.">
+<meta name="theme-color" content="#120c08">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,400&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #07080c;
-    --fg: #e8e6df;
-    --dim: #8a8fa3;
-    --accent: #6ea8ff;
-    --purple: #b48ce8;
-    --teal: #8ceedd;
-    --amber: #ffc46b;
-    --coral: #ff9d7a;
+    --bg: #120c08;
+    --cream: #f3e6cf;
+    --dim: #b9a68a;
+    --brass: #d6a94f;
+    --ink: #140b06;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    background: var(--bg);
-    color: var(--fg);
-    font-family: ui-sans-serif, system-ui, "Inter", "Helvetica Neue", sans-serif;
-    overflow: hidden;
-    -webkit-tap-highlight-color: transparent;
-  }
+  html, body { height: 100%; background: var(--bg); color: var(--cream); }
+  body { font-family: "Inter", ui-sans-serif, system-ui, sans-serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
 
-  /* ---------- ambience layers ---------- */
-  .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-  .aurora div {
-    position: absolute; width: 55vmax; height: 55vmax; border-radius: 50%;
-    filter: blur(70px); opacity: .16; will-change: transform;
+  #stage { position: fixed; inset: 0; overflow: hidden; }
+  #room { width: 100%; height: 100%; display: block; overflow: visible; }
+  /* portrait / narrow screens: keep the room tall and scroll sideways */
+  @media (max-aspect-ratio: 6/5) {
+    #stage { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+    #stage::-webkit-scrollbar { display: none; }
+    #room { width: 165vh; height: 100%; }
+    .title h1 { font-size: 24px; }
+    .title p { font-size: 12px; background: rgba(18,12,8,.6); padding: 2px 6px; border-radius: 6px; margin-left: -6px; }
+    .hint .wide { display: none; }
+    .hint .narrow { display: inline; }
   }
-  .aurora .a1 { left: -12vmax; top: -18vmax; background: radial-gradient(circle at 40% 40%, var(--accent), transparent 65%); animation: drift1 47s ease-in-out infinite alternate; }
-  .aurora .a2 { right: -16vmax; top: 8vmax; background: radial-gradient(circle at 55% 45%, var(--purple), transparent 65%); animation: drift2 61s ease-in-out infinite alternate; }
-  .aurora .a3 { left: 22vw; bottom: -26vmax; background: radial-gradient(circle at 50% 35%, var(--teal), transparent 65%); animation: drift3 53s ease-in-out infinite alternate; }
-  @keyframes drift1 { to { transform: translate(14vw, 10vh) scale(1.15); } }
-  @keyframes drift2 { to { transform: translate(-12vw, 14vh) scale(0.9); } }
-  @keyframes drift3 { to { transform: translate(10vw, -12vh) scale(1.1); } }
+  .hint .narrow { display: none; }
 
-  canvas#fx { position: fixed; inset: 0; z-index: 1; width: 100%; height: 100%; display: block; pointer-events: none; }
+  /* ---------- svg styling ---------- */
+  .ink { stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+  .thin { stroke: var(--ink); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+  .door, .deco { cursor: pointer; outline: none; }
+  .door > g, .deco > g { transition: filter .25s, transform .25s; transform-box: fill-box; transform-origin: 50% 100%; }
+  .door:hover > g, .door:focus-visible > g { filter: drop-shadow(0 0 10px rgba(255, 214, 140, .75)) brightness(1.12); transform: translateY(-3px); }
+  .deco:hover > g, .deco:focus-visible > g { filter: drop-shadow(0 0 7px rgba(255, 240, 210, .55)) brightness(1.1); }
+  .plaque text { font-family: "Fraunces", Georgia, serif; font-size: 11px; font-weight: 600; fill: #3a2408; letter-spacing: .5px; }
+  .door:hover .plaque rect { fill: #f0c86a; }
+  .bubble { animation: rise 2.6s linear infinite; }
+  @keyframes rise { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: .9; } 100% { transform: translateY(-58px); opacity: 0; } }
+  .blink { animation: blink 1.6s steps(2, start) infinite; }
+  @keyframes blink { to { visibility: hidden; } }
+  .pulse { animation: pulse 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes pulse { 0%, 100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.15); } }
+  .water { stroke-dasharray: 6 9; animation: flow .5s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -15; } }
+  .ripple { animation: ripple 1.8s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes ripple { from { transform: scale(.3); opacity: .8; } to { transform: scale(1.4); opacity: 0; } }
+  .sway { animation: sway 7s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+  @keyframes sway { from { transform: rotate(-1.2deg); } to { transform: rotate(1.4deg); } }
+  .scan { animation: scan 6s linear infinite; }
+  @keyframes scan { from { transform: translateY(-100px); } to { transform: translateY(110px); } }
 
-  /* ---------- header / footer ---------- */
-  header {
-    position: fixed; top: 1.3rem; left: 1.6rem; z-index: 5; pointer-events: none;
-  }
-  header h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: .05em; }
-  header p { color: var(--dim); font-size: .84rem; margin-top: .25rem; max-width: 30rem; line-height: 1.5; }
-  footer {
-    position: fixed; bottom: .65rem; width: 100%; text-align: center;
-    color: #4a4f61; font-size: .78rem; z-index: 6;
-  }
-  footer a { color: #6a7089; text-decoration: none; padding: .2rem .15rem; }
-  footer a:hover, footer a:focus-visible { color: var(--fg); text-decoration: underline; }
+  /* ---------- overlay UI ---------- */
+  .title { position: fixed; left: clamp(14px, 2.4vw, 34px); top: clamp(12px, 2.2vw, 30px); z-index: 5; pointer-events: none; text-shadow: 0 2px 12px rgba(0,0,0,.7); }
+  .title h1 { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: clamp(26px, 3.4vw, 46px); letter-spacing: .3px; line-height: 1; }
+  .title p { margin-top: 8px; color: var(--dim); font-size: clamp(12px, 1.05vw, 15px); max-width: 30ch; line-height: 1.45; }
+  .title p em { font-family: "Fraunces", Georgia, serif; color: var(--cream); }
 
-  /* ---------- field & creatures ---------- */
-  #field {
-    position: fixed; inset: 0; z-index: 2;
-    user-select: none; -webkit-user-select: none;
-  }
-  .creature {
-    color: var(--fg); text-decoration: none; cursor: pointer;
-    touch-action: manipulation;
-  }
-  .creature svg { overflow: visible; display: block; transition: transform .25s ease, filter .3s ease; }
-  .creature .tag {
-    position: absolute; bottom: calc(100% + 8px); left: 50%;
-    transform: translateX(-50%) translateY(4px); white-space: nowrap;
-    font-size: .82rem; font-weight: 500; letter-spacing: .03em;
-    padding: .3rem .7rem; border-radius: 99px;
-    background: rgba(13, 15, 22, .82); border: 1px solid var(--hue, var(--accent));
-    box-shadow: 0 4px 18px rgba(0,0,0,.4);
-    opacity: 0; pointer-events: none;
-    transition: opacity .2s ease, transform .2s ease;
-  }
-  .creature:hover .tag, .creature:focus-visible .tag,
-  .creature.armed .tag, .creature.excited .tag {
-    opacity: 1; transform: translateX(-50%) translateY(0);
-  }
-  .creature:focus-visible { outline: 2px solid var(--hue, var(--accent)); outline-offset: 6px; border-radius: 14px; }
+  #listBtn { position: fixed; right: clamp(12px, 2vw, 28px); top: clamp(12px, 2vw, 26px); z-index: 6; background: rgba(30,20,12,.75); color: var(--cream); border: 1px solid rgba(214,169,79,.45); border-radius: 999px; padding: 8px 14px; font: 600 13px "Inter", sans-serif; cursor: pointer; backdrop-filter: blur(6px); }
+  #listBtn:hover { border-color: var(--brass); }
+  #list { position: fixed; right: clamp(12px, 2vw, 28px); top: 62px; z-index: 6; background: rgba(24,16,10,.94); border: 1px solid rgba(214,169,79,.35); border-radius: 14px; padding: 10px; display: none; min-width: 260px; box-shadow: 0 18px 50px rgba(0,0,0,.6); }
+  #list.open { display: block; }
+  #list a { display: block; padding: 9px 12px; border-radius: 9px; color: var(--cream); text-decoration: none; }
+  #list a:hover { background: rgba(214,169,79,.14); }
+  #list a small { display: block; color: var(--dim); font-size: 12px; margin-top: 2px; }
 
-  /* --- interactive (play) mode --- */
-  body.play #field { display: block; }
-  body.play .creature {
-    position: absolute; left: 0; top: 0; will-change: transform;
-  }
-  body.play .creature .inner { display: block; position: relative; will-change: transform; }
-  body.play .creature:hover svg, body.play .creature:focus-visible svg {
-    transform: scale(1.14); animation: wiggle .5s ease;
-    filter: drop-shadow(0 0 16px var(--hue, var(--accent)));
-  }
-  body.play .creature.excited svg { filter: drop-shadow(0 0 14px var(--hue, var(--accent))); }
-  @keyframes wiggle {
-    0%,100% { transform: scale(1.14) rotate(0); }
-    25% { transform: scale(1.16) rotate(-6deg); }
-    65% { transform: scale(1.16) rotate(5deg); }
-  }
+  #tip { position: fixed; z-index: 7; pointer-events: none; background: rgba(24,16,10,.92); border: 1px solid rgba(214,169,79,.5); border-radius: 10px; padding: 7px 11px; font-size: 13px; opacity: 0; transform: translate(-50%, -130%); transition: opacity .15s; white-space: nowrap; }
+  #tip b { font-family: "Fraunces", Georgia, serif; font-size: 15px; color: #ffd98a; font-weight: 600; }
+  #tip span { color: var(--dim); }
+  #tip.on { opacity: 1; }
 
-  /* --- static / reduced-motion / no-JS fallback: neat grid of cards --- */
-  body:not(.play) #field {
-    position: fixed; inset: 0;
-    display: flex; flex-wrap: wrap; gap: 1.2rem;
-    align-items: center; justify-content: center; align-content: center;
-    padding: 6.5rem 1.4rem 4rem;
-  }
-  body:not(.play) .creature {
-    display: flex; flex-direction: column; align-items: center; gap: .8rem;
-    padding: 1.3rem 1.5rem 1.1rem; min-width: 10.2rem;
-    border: 1px solid #262b3d; border-radius: 16px;
-    background: rgba(14, 16, 24, .6);
-    transition: border-color .25s, transform .25s;
-  }
-  body:not(.play) .creature:hover, body:not(.play) .creature:focus-visible {
-    border-color: var(--hue, var(--accent)); transform: translateY(-3px);
-  }
-  body:not(.play) .creature .tag {
-    position: static; opacity: 1; transform: none; border-color: transparent;
-    background: none; box-shadow: none; padding: 0;
-  }
-  body:not(.play) #tray, body:not(.play) canvas#fx { display: none; }
-  body:not(.play) .aurora div { animation: none; }
-  body:not(.play) svg .anim { animation: none !important; }
+  #pane { position: fixed; z-index: 8; left: clamp(12px, 2.4vw, 34px); bottom: clamp(12px, 2.4vw, 34px); width: min(360px, calc(100vw - 24px)); background: linear-gradient(#2a1c11, #1d130b); border: 1px solid rgba(214,169,79,.55); border-radius: 16px; padding: 16px 18px 18px; box-shadow: 0 24px 60px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,230,180,.08); transform: translateY(14px); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+  #pane.open { opacity: 1; transform: none; pointer-events: auto; }
+  #pane h2 { font-family: "Fraunces", Georgia, serif; font-size: 22px; font-weight: 600; color: #ffe2a6; padding-right: 26px; }
+  #pane .latin { font-family: "Fraunces", Georgia, serif; font-style: italic; color: var(--dim); font-size: 14px; margin-top: 2px; }
+  #pane p { margin-top: 10px; font-size: 14px; line-height: 1.55; color: #eadcc3; }
+  #pane img { margin-top: 12px; width: 100%; border-radius: 10px; display: block; }
+  #pane .x { position: absolute; right: 12px; top: 10px; background: none; border: 0; color: var(--dim); font-size: 22px; cursor: pointer; }
+  #pane .x:hover { color: var(--cream); }
 
-  /* per-creature hue variables */
-  #cr-mouse  { --hue: var(--coral); }
-  #cr-jelly  { --hue: var(--purple); }
-  #cr-bird   { --hue: var(--teal); }
-  #cr-petrel { --hue: var(--accent); }
-  #cr-duck   { --hue: var(--amber); }
-
-  /* ---------- SVG idle animations ---------- */
-  .creature svg .anim { transform-box: fill-box; transform-origin: center; }
-  .eye     { animation: blink 4.6s infinite; }
-  .m-tail  { transform-origin: right center; animation: tailWig 2.3s ease-in-out infinite; }
-  .bell    { animation: pulse 2.8s ease-in-out infinite; }
-  .tend    { transform-origin: center top; animation: sway 3.4s ease-in-out infinite; }
-  .t2 { animation-delay: -.6s; } .t3 { animation-delay: -1.2s; }
-  .t4 { animation-delay: -1.9s; } .t5 { animation-delay: -2.5s; }
-  .wing    { transform-origin: 30% 20%; animation: flap 1.05s ease-in-out infinite; }
-  .gwing-l { transform-origin: right center; animation: gtilt 2.6s ease-in-out infinite; }
-  .gwing-r { transform-origin: left center; animation: gtilt 2.6s ease-in-out infinite reverse; }
-  .bobber  { animation: bob 1.7s ease-in-out infinite; }
-  .spray   { animation: sprayFlick 0.9s ease-in-out infinite; }
-  @keyframes blink { 0%, 91%, 100% { transform: scaleY(1); } 94% { transform: scaleY(.08); } }
-  @keyframes tailWig { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(14deg); } }
-  @keyframes pulse { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.05,.94); } }
-  @keyframes sway { 0%,100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
-  @keyframes flap { 0%,100% { transform: rotate(4deg); } 45% { transform: rotate(-26deg); } }
-  @keyframes gtilt { 0%,100% { transform: rotate(3deg); } 50% { transform: rotate(-5deg); } }
-  @keyframes bob { 0%,100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-3px) rotate(1.8deg); } }
-  @keyframes sprayFlick { 0%,100% { opacity: .25; } 50% { opacity: .8; } }
-
-  /* ---------- lure tray ---------- */
-  #tray {
-    position: fixed; bottom: 2.1rem; left: 50%; transform: translateX(-50%);
-    z-index: 6; display: flex; gap: .35rem; padding: .5rem .7rem;
-    border-radius: 20px; border: 1px solid rgba(140, 150, 190, .28);
-    background: rgba(16, 18, 28, .55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 10px 40px rgba(0,0,0,.45);
-  }
-  .token {
-    position: relative; border: none; background: none; cursor: grab;
-    font-size: 1.65rem; line-height: 1; padding: .5rem .55rem; border-radius: 14px;
-    touch-action: none; transition: background .2s, transform .15s;
-  }
-  .token:hover, .token:focus-visible { background: rgba(110, 168, 255, .14); transform: translateY(-3px); }
-  .token.picked { background: rgba(180, 140, 232, .25); box-shadow: 0 0 0 1.5px var(--purple); transform: translateY(-4px); }
-  .token .tip {
-    position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%);
-    white-space: nowrap; font-size: .74rem; font-family: inherit; color: var(--dim);
-    background: rgba(13,15,22,.9); border: 1px solid #2a2e3d; border-radius: 8px;
-    padding: .25rem .55rem; opacity: 0; pointer-events: none; transition: opacity .25s;
-  }
-  .token:hover .tip, .token:focus-visible .tip, .token.picked .tip { opacity: 1; }
-
-  /* ---------- lure on the field + particles ---------- */
-  .lure {
-    position: absolute; z-index: 3; font-size: 1.9rem; line-height: 1;
-    transform: translate(-50%, -50%); pointer-events: none;
-    filter: drop-shadow(0 0 10px rgba(255, 220, 140, .5));
-    animation: lureIn .55s cubic-bezier(.25, 1.6, .5, 1);
-    transition: opacity 2s ease;
-  }
-  .lure.fading { opacity: 0; }
-  @keyframes lureIn {
-    0% { transform: translate(-50%, -180%) scale(.4); opacity: 0; }
-    60% { transform: translate(-50%, -42%) scale(1.15); opacity: 1; }
-    100% { transform: translate(-50%, -50%) scale(1); }
-  }
-  .pop {
-    position: absolute; z-index: 4; font-size: 1.25rem; font-weight: 700;
-    transform: translate(-50%, -100%); pointer-events: none;
-    animation: popUp 1s ease-out forwards;
-    text-shadow: 0 2px 10px rgba(0,0,0,.6);
-  }
-  @keyframes popUp {
-    0% { opacity: 0; margin-top: 0; }
-    18% { opacity: 1; }
-    100% { opacity: 0; margin-top: -34px; }
-  }
-  #ghost {
-    position: fixed; z-index: 9; font-size: 1.9rem; line-height: 1;
-    transform: translate(-50%, -50%); pointer-events: none; display: none;
-    filter: drop-shadow(0 4px 14px rgba(0,0,0,.5));
-  }
-
-  @media (max-width: 560px) {
-    header { left: 1.1rem; right: 1.1rem; }
-    header p { font-size: .78rem; }
-    .token { font-size: 1.45rem; }
-    footer { font-size: .72rem; }
-  }
+  .hint { position: fixed; right: clamp(12px, 2vw, 28px); bottom: clamp(10px, 1.6vw, 22px); z-index: 4; color: rgba(243,230,207,.5); font-size: 12px; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { .bubble, .pulse, .water, .ripple, .sway, .scan, .blink { animation: none; } }
 </style>
 </head>
 <body>
 
-<div class="aurora" aria-hidden="true"><div class="a1"></div><div class="a2"></div><div class="a3"></div></div>
-<canvas id="fx" aria-hidden="true"></canvas>
-
-<header>
-  <h1>corentin bel</h1>
-  <p>five creatures, five corners of my internet — catch one</p>
-</header>
-
-<div id="field">
-
-  <a class="creature" id="cr-mouse" href="https://aboutme.corentinbel.com" aria-label="about me — aboutme.corentinbel.com" draggable="false">
-    <span class="inner">
-      <svg width="76" height="62" viewBox="0 0 110 90" aria-hidden="true">
-        <defs>
-          <linearGradient id="g-mouse" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#ffb08a"/><stop offset="1" stop-color="#ff7d9d"/>
-          </linearGradient>
-        </defs>
-        <path class="anim m-tail" d="M16 62 Q-4 60 3 44 Q6 37 12 38" fill="none" stroke="#ff9d7a" stroke-width="4.5" stroke-linecap="round"/>
-        <circle cx="40" cy="24" r="13" fill="url(#g-mouse)"/>
-        <circle cx="40" cy="24" r="6.5" fill="#ffd9c9" opacity=".85"/>
-        <circle cx="72" cy="18" r="12" fill="url(#g-mouse)"/>
-        <circle cx="72" cy="18" r="6" fill="#ffd9c9" opacity=".85"/>
-        <path d="M16 58 Q15 33 44 29 Q80 23 97 47 Q101 55 93 61 Q62 79 31 74 Q16 70 16 58 Z" fill="url(#g-mouse)"/>
-        <ellipse class="anim eye" cx="72" cy="42" rx="3.4" ry="4" fill="#241521"/>
-        <ellipse class="anim eye" cx="87" cy="45" rx="2.9" ry="3.5" fill="#241521"/>
-        <circle cx="99" cy="52" r="4" fill="#ff5d73"/>
-        <path d="M96 54 L108 48 M97 57 L110 56 M96 60 L107 65" stroke="#ffd9c9" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
-      </svg>
-      <span class="tag">about me</span>
-    </span>
-  </a>
-
-  <a class="creature" id="cr-jelly" href="https://lab.corentinbel.com" aria-label="the lab — lab.corentinbel.com" draggable="false">
-    <span class="inner">
-      <svg width="86" height="90" viewBox="0 0 110 115" aria-hidden="true">
-        <defs>
-          <radialGradient id="g-jelly" cx="50%" cy="35%" r="75%">
-            <stop offset="0" stop-color="#e3d0ff"/><stop offset=".55" stop-color="#b48ce8"/><stop offset="1" stop-color="#6ea8ff"/>
-          </radialGradient>
-        </defs>
-        <g>
-          <path class="anim tend t1" d="M28 66 q-6 14 1 25 q5 9 -2 18" fill="none" stroke="#8ceedd" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
-          <path class="anim tend t2" d="M42 70 q-3 15 3 26 q4 8 -1 15" fill="none" stroke="#b48ce8" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
-          <path class="anim tend t3" d="M55 72 q-2 16 2 27 q3 8 -2 14" fill="none" stroke="#8ceedd" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
-          <path class="anim tend t4" d="M68 70 q3 15 -2 26 q-4 8 2 15" fill="none" stroke="#b48ce8" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
-          <path class="anim tend t5" d="M82 66 q6 14 0 25 q-5 9 3 18" fill="none" stroke="#8ceedd" stroke-width="3.6" stroke-linecap="round" opacity=".9"/>
-        </g>
-        <g class="anim bell">
-          <path d="M18 62 Q16 18 55 14 Q94 18 92 62 Q74 74 55 72 Q36 74 18 62 Z" fill="url(#g-jelly)"/>
-          <path d="M28 40 q7 -9 13 0 q6 9 12 0 q6 -9 12 0 q6 9 13 0" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2.6" stroke-linecap="round"/>
-          <path d="M32 52 q6 -7 11 0 q5 7 11 0 q5 -7 11 0 q5 7 11 0" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2.2" stroke-linecap="round"/>
-          <ellipse class="anim eye" cx="44" cy="60" rx="3" ry="3.6" fill="#241533"/>
-          <ellipse class="anim eye" cx="64" cy="60" rx="3" ry="3.6" fill="#241533"/>
-          <path d="M50 66 q4 3.5 8 0" fill="none" stroke="#241533" stroke-width="2" stroke-linecap="round"/>
-        </g>
-      </svg>
-      <span class="tag">the lab</span>
-    </span>
-  </a>
-
-  <a class="creature" id="cr-bird" href="https://art.corentinbel.com" aria-label="art — art.corentinbel.com" draggable="false">
-    <span class="inner">
-      <svg width="66" height="58" viewBox="0 0 110 96" aria-hidden="true">
-        <defs>
-          <linearGradient id="g-bird" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#9ff0d9"/><stop offset="1" stop-color="#58c4e8"/>
-          </linearGradient>
-          <linearGradient id="g-bwing" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#b48ce8"/><stop offset="1" stop-color="#8ceedd"/>
-          </linearGradient>
-        </defs>
-        <path d="M20 50 L4 38 L12 52 L2 60 L20 58 Z" fill="url(#g-bwing)" opacity=".9"/>
-        <path d="M16 56 Q14 26 48 22 Q84 18 94 44 Q98 56 88 64 Q60 82 30 72 Q16 66 16 56 Z" fill="url(#g-bird)"/>
-        <circle cx="78" cy="34" r="17" fill="url(#g-bird)"/>
-        <path d="M93 32 L108 36 L93 41 Z" fill="#ffc46b"/>
-        <ellipse class="anim eye" cx="80" cy="31" rx="3.2" ry="3.8" fill="#13202b"/>
-        <path d="M60 66 q8 6 18 3" fill="none" stroke="#ffc46b" stroke-width="3" stroke-linecap="round" opacity=".85"/>
-        <path class="anim wing" d="M36 42 Q58 30 74 44 Q60 62 40 58 Q30 52 36 42 Z" fill="url(#g-bwing)"/>
-        <path d="M44 76 l-2 12 M56 76 l2 12" stroke="#ffc46b" stroke-width="2.6" stroke-linecap="round"/>
-      </svg>
-      <span class="tag">art</span>
-    </span>
-  </a>
-
-  <a class="creature" id="cr-petrel" href="https://wind.corentinbel.com" aria-label="live wind — wind.corentinbel.com" draggable="false">
-    <span class="inner">
-      <svg width="98" height="48" viewBox="0 0 150 74" aria-hidden="true">
-        <defs>
-          <linearGradient id="g-gull" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#f6f9ff"/><stop offset="1" stop-color="#a9c6ff"/>
-          </linearGradient>
-          <linearGradient id="g-gwing" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#6ea8ff"/><stop offset="1" stop-color="#dbe8ff"/>
-          </linearGradient>
-        </defs>
-        <path class="anim gwing-l" d="M62 38 Q34 12 4 20 Q26 30 44 44 Q54 48 62 44 Z" fill="url(#g-gwing)"/>
-        <path class="anim gwing-r" d="M88 38 Q116 12 146 20 Q124 30 106 44 Q96 48 88 44 Z" fill="url(#g-gwing)"/>
-        <path d="M50 44 Q52 30 75 28 Q98 30 102 42 Q104 50 96 54 Q76 62 56 54 Q48 50 50 44 Z" fill="url(#g-gull)"/>
-        <circle cx="96" cy="36" r="12" fill="url(#g-gull)"/>
-        <path d="M106 34 L120 37 L106 41 Z" fill="#ffc46b"/>
-        <ellipse class="anim eye" cx="98" cy="33" rx="2.6" ry="3.1" fill="#1a2233"/>
-        <path d="M50 48 L38 56 L52 54 Z" fill="#a9c6ff"/>
-      </svg>
-      <span class="tag">live wind</span>
-    </span>
-  </a>
-
-  <a class="creature" id="cr-duck" href="https://downthewind.com" aria-label="downthewind — downthewind.com" draggable="false">
-    <span class="inner">
-      <svg width="84" height="88" viewBox="0 0 120 126" aria-hidden="true">
-        <defs>
-          <linearGradient id="g-duck" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#ffd98a"/><stop offset="1" stop-color="#ff9d5c"/>
-          </linearGradient>
-          <linearGradient id="g-board" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#6ea8ff"/><stop offset="1" stop-color="#8ceedd"/>
-          </linearGradient>
-        </defs>
-        <g class="anim bobber">
-          <path class="anim spray" d="M18 88 q-8 -4 -10 -12 M20 92 q-11 -1 -16 -7" stroke="#8ceedd" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-          <rect x="24" y="82" width="70" height="8" rx="4" fill="url(#g-board)"/>
-          <path d="M58 90 L58 108 M40 108 L82 108 M74 108 L74 114 M64 114 L86 114" stroke="#6ea8ff" stroke-width="3.4" stroke-linecap="round" fill="none"/>
-          <path d="M34 74 Q32 48 58 44 Q88 40 96 60 Q100 72 90 78 Q64 90 42 82 Q34 79 34 74 Z" fill="url(#g-duck)"/>
-          <circle cx="86" cy="38" r="15" fill="url(#g-duck)"/>
-          <path d="M99 35 L116 40 L99 46 Z" fill="#ff7a45"/>
-          <ellipse class="anim eye" cx="88" cy="34" rx="3" ry="3.6" fill="#33200f"/>
-          <path d="M50 64 Q64 56 74 66 Q64 76 52 72 Q46 68 50 64 Z" fill="#ffb066" opacity=".9"/>
-        </g>
-      </svg>
-      <span class="tag">downthewind</span>
-    </span>
-  </a>
-
+<div class="title">
+  <h1>Corentin Bel</h1>
+  <p>Brain decoding by day, foiling by wind. <em>Pick something off the shelf.</em></p>
 </div>
 
-<div id="tray" aria-label="lures — drag one onto the field">
-  <button type="button" class="token" data-lure="cheese" aria-label="cheese lure"><span aria-hidden="true">🧀</span><span class="tip">who likes cheese?</span></button>
-  <button type="button" class="token" data-lure="wave" aria-label="wave lure"><span aria-hidden="true">🌊</span><span class="tip">who likes waves?</span></button>
-  <button type="button" class="token" data-lure="piano" aria-label="piano lure"><span aria-hidden="true">🎹</span><span class="tip">who likes piano?</span></button>
-  <button type="button" class="token" data-lure="gust" aria-label="gust lure"><span aria-hidden="true">💨</span><span class="tip">who likes a breeze?</span></button>
-  <button type="button" class="token" data-lure="baguette" aria-label="baguette lure"><span aria-hidden="true">🥖</span><span class="tip">who likes baguettes?</span></button>
+<button id="listBtn" aria-expanded="false" aria-controls="list">☰ plain list</button>
+<nav id="list" aria-label="All pages">
+  <a href="https://aboutme.corentinbel.com">about me<small>research, papers, the person</small></a>
+  <a href="https://lab.corentinbel.com">the lab<small>interactive experiments &amp; explainers</small></a>
+  <a href="https://art.corentinbel.com">art<small>generative pieces, fractals, sitar tuner</small></a>
+  <a href="https://wind.corentinbel.com">live wind<small>forecast map for foilers</small></a>
+  <a href="https://downthewind.com">downthewind<small>downwind foil runs in France</small></a>
+</nav>
+
+<div id="stage">
+<svg id="room" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A cosy room: a dark wood shelf with objects that lead to each part of the site, a fireplace, plants and a window at dusk">
+<defs>
+  <linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#14201f"/><stop offset=".75" stop-color="#1c2b29"/><stop offset="1" stop-color="#22302b"/>
+  </linearGradient>
+  <pattern id="paper" width="46" height="46" patternUnits="userSpaceOnUse">
+    <path d="M23 6 l5 9 -5 9 -5 -9z" fill="#ffffff" opacity=".028"/>
+    <path d="M0 29 l5 9 -5 9 M46 29 l-5 9 5 9" fill="none" stroke="#fff" stroke-opacity=".02"/>
+  </pattern>
+  <linearGradient id="floorG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3a2414"/><stop offset="1" stop-color="#1e120a"/>
+  </linearGradient>
+  <linearGradient id="woodV" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#3d2415"/><stop offset=".45" stop-color="#55331d"/><stop offset="1" stop-color="#2f1b0f"/>
+  </linearGradient>
+  <linearGradient id="woodH" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#6a4126"/><stop offset=".35" stop-color="#4f2f1b"/><stop offset="1" stop-color="#2f1b0e"/>
+  </linearGradient>
+  <linearGradient id="backG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#140c07"/><stop offset="1" stop-color="#22150c"/>
+  </linearGradient>
+  <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#1a2348"/><stop offset=".5" stop-color="#6b4a78"/><stop offset=".82" stop-color="#e8875b"/><stop offset="1" stop-color="#f6b56e"/>
+  </linearGradient>
+  <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#3d4c78"/><stop offset="1" stop-color="#1a2440"/>
+  </linearGradient>
+  <linearGradient id="brass" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f3cf7a"/><stop offset="1" stop-color="#b98a33"/>
+  </linearGradient>
+  <linearGradient id="silver" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8d949c"/><stop offset=".3" stop-color="#f4f7fa"/><stop offset=".55" stop-color="#b9c1c9"/><stop offset="1" stop-color="#6c737b"/>
+  </linearGradient>
+  <linearGradient id="glass" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#cfe9ff" stop-opacity=".28"/><stop offset=".25" stop-color="#ffffff" stop-opacity=".08"/><stop offset=".8" stop-color="#cfe9ff" stop-opacity=".05"/><stop offset="1" stop-color="#cfe9ff" stop-opacity=".22"/>
+  </linearGradient>
+  <linearGradient id="tvScreen" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2a1d5c"/><stop offset=".6" stop-color="#4b2f7a"/><stop offset="1" stop-color="#11243f"/>
+  </linearGradient>
+  <linearGradient id="boardG" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#1f8a86"/><stop offset=".5" stop-color="#2fb3a8"/><stop offset="1" stop-color="#1b7672"/>
+  </linearGradient>
+  <linearGradient id="terracotta" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#9b4a2c"/><stop offset=".45" stop-color="#c8693f"/><stop offset="1" stop-color="#8a3f25"/>
+  </linearGradient>
+  <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#6d655c"/><stop offset="1" stop-color="#4a433c"/>
+  </linearGradient>
+  <radialGradient id="fireGlow" cx=".5" cy=".5" r=".5">
+    <stop offset="0" stop-color="#ffb35a" stop-opacity=".55"/><stop offset=".45" stop-color="#ff7a2a" stop-opacity=".16"/><stop offset="1" stop-color="#ff7a2a" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="winGlow" cx=".5" cy=".5" r=".5">
+    <stop offset="0" stop-color="#f6a46a" stop-opacity=".22"/><stop offset="1" stop-color="#f6a46a" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="vignette" cx=".5" cy=".46" r=".75">
+    <stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/>
+  </radialGradient>
+  <filter id="blur6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+  <filter id="blur2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.6"/></filter>
+  <clipPath id="winClip"><rect x="1266" y="126" width="228" height="308"/></clipPath>
+  <clipPath id="tvClip"><rect x="551" y="589" width="128" height="96" rx="16"/></clipPath>
+  <clipPath id="photoClip"><rect x="152" y="300" width="136" height="102"/></clipPath>
+</defs>
+
+<!-- ================= room shell (drawn wide so ultra-wide screens never see an edge) ================= -->
+<rect x="-1600" y="-1000" width="4800" height="1870" fill="url(#wallG)"/>
+<rect x="-1600" y="-1000" width="4800" height="1870" fill="url(#paper)"/>
+<rect x="-1600" y="850" width="4800" height="22" fill="#2a190e" class="ink"/>
+<rect x="-1600" y="872" width="4800" height="1200" fill="url(#floorG)"/>
+<g stroke="#140b06" stroke-opacity=".55" stroke-width="2">
+  <path d="M-1600 905H3200M-1600 945H3200M-1600 992H3200"/>
+  <path d="M120 872v33M470 872v33M860 872v33M1240 872v33M1560 872v33M300 905v40M690 905v40M1050 905v40M1420 905v40M90 945v47M520 945v47M960 945v47M1330 945v47"/>
+</g>
+<!-- rug -->
+<ellipse cx="250" cy="935" rx="235" ry="44" fill="#5b2125" class="ink"/>
+<ellipse cx="250" cy="935" rx="205" ry="33" fill="none" stroke="#c9944a" stroke-width="3" stroke-dasharray="2 7"/>
+<ellipse cx="250" cy="935" rx="160" ry="22" fill="#6e2a2c"/>
+
+<!-- ================= window (right) ================= -->
+<g id="window">
+  <rect x="1250" y="110" width="260" height="340" rx="4" fill="#3a2414" class="ink"/>
+  <rect x="1266" y="126" width="228" height="308" fill="url(#skyG)"/>
+  <g clip-path="url(#winClip)">
+    <circle cx="1440" cy="392" r="26" fill="#ffd38a" opacity=".95"/>
+    <rect x="1266" y="390" width="228" height="44" fill="url(#seaG)"/>
+    <path d="M1266 392 q30 -14 60 -6 q30 -16 60 -4 q40 -20 108 2 v10 h-228z" fill="#2a2440" opacity=".85"/>
+    <path d="M1400 404h70M1420 414h50M1395 424h40" stroke="#ffd38a" stroke-opacity=".6" stroke-width="2"/>
+    <g id="stars" fill="#fff"></g>
+    <!-- paraglider drifting by -->
+    <g id="paraglider">
+      <path d="M-34 0 Q0 -22 34 0 Q0 -12 -34 0z" fill="#e8574a" class="thin"/>
+      <path d="M-20 -6 Q0 -18 20 -6" fill="none" stroke="#ffd166" stroke-width="3"/>
+      <path d="M-32 0 L-2 34 M32 0 L2 34 M-14 -6 L-1 34 M14 -6 L1 34" stroke="#1d1d2b" stroke-width="1" opacity=".8"/>
+      <circle cx="0" cy="36" r="3.2" fill="#1d1d2b"/>
+      <path d="M-3 39 L3 39" stroke="#1d1d2b" stroke-width="3"/>
+    </g>
+  </g>
+  <path d="M1380 126v308M1266 280h228" stroke="#3a2414" stroke-width="10"/>
+  <path d="M1380 126v308M1266 280h228" stroke="#140b06" stroke-width="2" opacity=".5"/>
+  <rect x="1238" y="446" width="284" height="18" rx="3" fill="url(#woodH)" class="ink"/>
+  <rect x="1180" y="-600" width="380" height="1400" fill="url(#winGlow)" pointer-events="none"/>
+  <!-- curtains -->
+  <path d="M1206 86 q22 160 6 300 q-8 100 22 150 h34 q-24 -60 -14 -170 q12 -150 -4 -280z" fill="#5a1f2a" class="ink"/>
+  <path d="M1554 86 q-22 160 -6 300 q8 100 -22 150 h-34 q24 -60 14 -170 q-12 -150 4 -280z" fill="#5a1f2a" class="ink"/>
+  <rect x="1190" y="76" width="380" height="12" rx="6" fill="url(#brass)" class="thin"/>
+</g>
+
+<!-- ================= fireplace (left) ================= -->
+<g id="fireplace">
+  <rect x="60" y="540" width="320" height="312" fill="url(#stone)" class="ink"/>
+  <g stroke="#2e2924" stroke-width="2" opacity=".7">
+    <path d="M60 580h320M60 620h70M310 620h70M60 660h70M310 660h70M60 700h70M310 700h70M60 740h70M310 740h70M60 780h70M310 780h70M60 820h70M310 820h70"/>
+    <path d="M140 540v40M220 540v40M300 540v40M100 580v40M95 660v40M100 740v40M345 620v40M340 700v40M345 780v40"/>
+  </g>
+  <path d="M130 852 V700 Q130 640 220 640 Q310 640 310 700 V852z" fill="#0d0705" class="ink"/>
+  <path d="M146 852 V706 Q146 656 220 656 Q294 656 294 706 V852z" fill="#1a0c06"/>
+  <!-- logs -->
+  <rect x="160" y="818" width="120" height="22" rx="11" fill="#5a3418" class="ink"/>
+  <rect x="172" y="806" width="100" height="18" rx="9" fill="#6e4220" class="ink" transform="rotate(-8 222 815)"/>
+  <circle cx="273" cy="829" r="7" fill="#c98a4a" class="thin"/>
+  <ellipse cx="220" cy="822" rx="70" ry="14" fill="#ff9a2a" opacity=".55" filter="url(#blur6)"/>
+  <g id="fire"></g>
+  <rect x="160" y="818" width="120" height="22" rx="11" fill="#5a3418" class="ink"/>
+  <circle cx="273" cy="829" r="7" fill="#c98a4a" class="thin"/>
+  <g id="embers"></g>
+  <!-- mantle -->
+  <rect x="38" y="520" width="364" height="26" rx="3" fill="url(#woodH)" class="ink"/>
+  <rect x="44" y="852" width="352" height="22" rx="2" fill="#5a524a" class="ink"/>
+</g>
+
+<!-- framed photo above the mantle -->
+<a class="deco" data-info="kite" tabindex="0" role="button" aria-label="Photo: mountainboard kiting in Saint-Malo">
+<g>
+  <rect x="140" y="288" width="160" height="126" rx="4" fill="url(#brass)" class="ink"/>
+  <rect x="152" y="300" width="136" height="102" fill="#203040"/>
+  <image href="img/kite-saintmalo.webp" x="152" y="300" width="136" height="102" preserveAspectRatio="xMidYMid slice" clip-path="url(#photoClip)"/>
+  <path d="M220 262 L150 290 M220 262 L290 290" stroke="#c9a253" stroke-width="2"/>
+  <circle cx="220" cy="262" r="4" fill="url(#brass)" class="thin"/>
+</g>
+</a>
+
+<!-- candles on the mantle -->
+<g id="candles">
+  <rect x="318" y="468" width="16" height="52" rx="3" fill="#efe2c4" class="thin"/>
+  <rect x="342" y="486" width="16" height="34" rx="3" fill="#efe2c4" class="thin"/>
+  <path class="flame" d="M326 468 q-6 -10 0 -20 q6 10 0 20z" fill="#ffcf6a"/>
+  <path class="flame" d="M350 486 q-6 -10 0 -20 q6 10 0 20z" fill="#ffcf6a"/>
+  <circle cx="326" cy="458" r="18" fill="#ffcf6a" opacity=".16" filter="url(#blur6)"/>
+  <circle cx="350" cy="476" r="18" fill="#ffcf6a" opacity=".16" filter="url(#blur6)"/>
+</g>
+
+<!-- seashells on the mantle -->
+<a class="deco" data-info="shells" tabindex="0" role="button" aria-label="Seashells">
+<g>
+  <path d="M232 520 q-22 -2 -24 -22 q12 -14 24 -14 q12 0 24 14 q-2 20 -24 22z" fill="#f2c9a8" class="thin"/>
+  <path d="M232 520 L216 500 M232 520 L224 492 M232 520 L232 488 M232 520 L240 492 M232 520 L248 500" stroke="#b9775a" stroke-width="1.4"/>
+  <path d="M262 520 q-4 -18 10 -26 q14 -6 20 6 q8 16 -6 20 q-10 2 -24 0z" fill="#f6e4c8" class="thin"/>
+  <path d="M272 510 q6 -8 12 -2 q2 6 -6 6" fill="none" stroke="#b08a66" stroke-width="1.4"/>
+  <ellipse cx="200" cy="514" rx="9" ry="6" fill="#e9b5a0" class="thin"/>
+  <path d="M193 514 h14" stroke="#7b4a3a" stroke-width="1.2"/>
+</g>
+</a>
+
+<!-- cherry blossom vase on the mantle (generated) -->
+<a class="deco" data-info="cherry" tabindex="0" role="button" aria-label="Cherry blossom">
+<g id="cherry"></g>
+</a>
+
+<!-- ================= the shelf ================= -->
+<g id="shelf">
+  <rect x="516" y="158" width="588" height="690" fill="url(#backG)"/>
+  <g stroke="#000" stroke-opacity=".25" stroke-width="2"><path d="M580 158v690M660 158v690M740 158v690M880 158v690M960 158v690M1040 158v690"/></g>
+  <!-- posts -->
+  <rect x="490" y="150" width="28" height="704" fill="url(#woodV)" class="ink"/>
+  <rect x="1102" y="150" width="28" height="704" fill="url(#woodV)" class="ink"/>
+  <rect x="797" y="158" width="26" height="560" fill="url(#woodV)" class="ink"/>
+  <!-- planks -->
+  <rect x="506" y="330" width="608" height="20" fill="url(#woodH)" class="ink"/>
+  <rect x="506" y="525" width="608" height="20" fill="url(#woodH)" class="ink"/>
+  <rect x="506" y="715" width="608" height="20" fill="url(#woodH)" class="ink"/>
+  <!-- crown + plinth -->
+  <rect x="468" y="126" width="684" height="30" rx="3" fill="url(#woodH)" class="ink"/>
+  <rect x="480" y="118" width="660" height="10" rx="3" fill="#6a4126" class="ink"/>
+  <rect x="478" y="840" width="664" height="30" rx="3" fill="url(#woodH)" class="ink"/>
+</g>
+
+<!-- ================= sitar leaning between fireplace and shelf ================= -->
+<a class="deco" data-info="sitar" tabindex="0" role="button" aria-label="Sitar">
+<g id="sitar">
+  <g transform="translate(-14 0) rotate(5 445 820)">
+    <!-- neck -->
+    <path d="M432 760 V300 q0 -10 10 -10 h8 q10 0 10 10 V760z" fill="#7a4520" class="ink"/>
+    <path d="M440 300 v460 M452 300 v460" stroke="#e8d7a8" stroke-width="1" opacity=".8"/>
+    <g stroke="#d6a94f" stroke-width="2.5">
+      <path d="M430 372h32M430 402h32M430 430h32M430 456h32M430 480h32M430 502h32M430 523h32M430 543h32M430 562h32M430 580h32M430 597h32"/>
+    </g>
+    <!-- headstock + pegs -->
+    <path d="M436 292 q-4 -30 12 -44 q14 12 10 44z" fill="#8a5126" class="ink"/>
+    <path d="M430 270 h-12 M466 282 h12 M430 300 h-12 M464 318 h12 M430 336 h-12" stroke="#efe2c4" stroke-width="5" stroke-linecap="round"/>
+    <!-- upper resonator gourd behind the neck -->
+    <circle cx="430" cy="352" r="22" fill="#a0602c" class="ink" transform="translate(-6 0)"/>
+    <path d="M432 352 h28" stroke="#7a4520" stroke-width="18"/>
+    <!-- main gourd -->
+    <path d="M446 744 c-44 0 -66 30 -66 66 c0 36 28 50 66 50 c38 0 66 -14 66 -50 c0 -36 -22 -66 -66 -66z" fill="#b0692e" class="ink"/>
+    <path d="M446 752 c-30 2 -50 24 -54 54 M446 752 c30 2 50 24 54 54" fill="none" stroke="#8a4f22" stroke-width="2"/>
+    <path d="M400 820 q46 22 92 0" fill="none" stroke="#e8c37a" stroke-width="2.4" stroke-dasharray="4 4"/>
+    <circle cx="446" cy="800" r="9" fill="none" stroke="#efe2c4" stroke-width="2"/>
+    <path d="M428 832 h36" stroke="#efe2c4" stroke-width="5" stroke-linecap="round"/>
+    <path d="M440 760 v72 M452 760 v72" stroke="#e8d7a8" stroke-width="1" opacity=".8"/>
+  </g>
+</g>
+</a>
+
+<!-- ---- bottom row: books ---- -->
+<g id="books"></g>
+
+<!-- ---- row 1 left: laptop + brain in a bell jar → about me ---- -->
+<a class="door" href="https://aboutme.corentinbel.com" data-label="about me" data-sub="research, papers, the person">
+<g>
+  <!-- laptop -->
+  <path d="M548 216 q0 -6 6 -6 h138 q6 0 6 6 v94 h-150z" fill="#2b2f36" class="ink"/>
+  <rect x="557" y="219" width="132" height="84" rx="3" fill="#0b1712"/>
+  <text id="term" x="563" y="232" font-family="ui-monospace, Menlo, monospace" font-size="8.4" fill="#7dffb0"></text>
+  <rect x="557" y="219" width="132" height="84" fill="#7dffb0" opacity=".04"/>
+  <path d="M530 330 l18 -20 h150 l18 20z" fill="#a9b0ba" class="ink"/>
+  <path d="M556 318 h134" stroke="#6c737b" stroke-width="2" stroke-dasharray="5 3"/>
+  <!-- bell jar + brain -->
+  <rect x="712" y="318" width="74" height="12" rx="3" fill="url(#woodH)" class="ink"/>
+  <g id="brainJar">
+    <path d="M749 268 c-24 -4 -30 14 -24 28 c4 12 22 16 36 12 c16 -4 22 -18 16 -30 c-6 -12 -16 -12 -28 -10z" fill="#f1a6b2" class="ink"/>
+    <path d="M734 284 q6 -8 12 0 q6 8 12 0 q6 -8 12 0 M738 296 q6 -6 12 0 q6 6 12 0 M746 274 q4 -4 10 0" fill="none" stroke="#b9606f" stroke-width="2"/>
+    <path d="M760 308 q4 6 0 10" fill="none" stroke="#c97a86" stroke-width="5" stroke-linecap="round"/>
+    <circle class="pulse" cx="771" cy="288" r="6" fill="#ffd34a" opacity=".8"/>
+    <circle class="pulse" cx="752" cy="300" r="5" fill="#ff8a3d" style="animation-delay:.8s" opacity=".8"/>
+    <circle class="pulse" cx="740" cy="300" r="4" fill="#ffb84a" style="animation-delay:1.5s" opacity=".8"/>
+  </g>
+  <path d="M716 318 V246 q0 -42 33 -42 q33 0 33 42 V318z" fill="url(#glass)" stroke="#d9efff" stroke-opacity=".6" stroke-width="2"/>
+  <circle cx="749" cy="200" r="5" fill="#d9efff" fill-opacity=".5" stroke="#d9efff" stroke-opacity=".6"/>
+  <path d="M726 300 V250 q0 -26 16 -34" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3"/>
+  <g class="plaque"><rect x="618" y="334" width="76" height="13" rx="2" fill="url(#brass)" class="thin"/><text x="656" y="344.5" text-anchor="middle">about me</text></g>
+</g>
+</a>
+
+<!-- ---- row 1 right: Faker's trophy ---- -->
+<a class="deco" data-info="faker" tabindex="0" role="button" aria-label="Trophy for Faker">
+<g>
+  <rect x="908" y="312" width="104" height="18" rx="2" fill="#2a2a30" class="ink"/>
+  <rect x="918" y="296" width="84" height="18" rx="2" fill="#3a3a42" class="ink"/>
+  <text x="960" y="309" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="11" font-weight="600" fill="url(#brass)" letter-spacing="2">FAKER</text>
+  <path d="M948 296 l4 -26 h16 l4 26z" fill="url(#silver)" class="ink"/>
+  <path d="M926 196 q2 60 34 76 q32 -16 34 -76z" fill="url(#silver)" class="ink"/>
+  <ellipse cx="960" cy="196" rx="34" ry="8" fill="#d8dee4" class="ink"/>
+  <path d="M926 206 q-20 4 -16 26 q4 16 22 18 M994 206 q20 4 16 26 q-4 16 -22 18" fill="none" stroke="#b9c1c9" stroke-width="5"/>
+  <path d="M942 214 q4 30 18 44" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="3"/>
+  <g id="trophyStars" fill="#ffd34a" stroke="#7a5a10" stroke-width=".8"></g>
+</g>
+</a>
+
+<!-- ---- row 2 left: test tubes, flask, robot → lab ---- -->
+<a class="door" href="https://lab.corentinbel.com" data-label="the lab" data-sub="interactive experiments &amp; explainers">
+<g>
+  <g id="tubes"></g>
+  <!-- flask -->
+  <path d="M676 440 h18 v22 l22 50 q4 12 -8 12 h-46 q-12 0 -8 -12 l22 -50z" fill="url(#glass)" stroke="#d9efff" stroke-opacity=".75" stroke-width="2"/>
+  <path d="M662 494 h52 l6 16 q2 10 -8 10 h-48 q-10 0 -8 -10z" fill="#6dff9e" opacity=".85"/>
+  <circle class="bubble" cx="680" cy="510" r="3" fill="#d6ffe4" style="animation-delay:.3s"/>
+  <circle class="bubble" cx="694" cy="514" r="2.5" fill="#d6ffe4" style="animation-delay:1.4s"/>
+  <circle cx="688" cy="490" r="26" fill="#6dff9e" opacity=".12" filter="url(#blur6)"/>
+  <rect x="672" y="434" width="26" height="8" rx="2" fill="#c8a06a" class="thin"/>
+  <!-- robot -->
+  <g id="robot">
+    <rect x="735" y="508" width="50" height="17" rx="8" fill="#3a3f48" class="ink"/>
+    <circle cx="745" cy="516" r="4" fill="#6c737b"/><circle cx="760" cy="516" r="4" fill="#6c737b"/><circle cx="775" cy="516" r="4" fill="#6c737b"/>
+    <rect x="740" y="470" width="40" height="40" rx="6" fill="#e9b949" class="ink"/>
+    <rect x="750" y="480" width="20" height="12" rx="2" fill="#2b2f36"/>
+    <circle class="blink" cx="755" cy="486" r="2" fill="#ff5a5a"/><circle cx="764" cy="486" r="2" fill="#6dff9e"/>
+    <path d="M740 484 q-12 4 -10 18 M780 484 q12 4 10 18" fill="none" stroke="#3a3f48" stroke-width="5" stroke-linecap="round"/>
+    <rect x="743" y="436" width="34" height="30" rx="8" fill="#d9dde3" class="ink"/>
+    <rect x="747" y="442" width="26" height="16" rx="6" fill="#1b2230"/>
+    <circle class="eye" cx="755" cy="450" r="3.4" fill="#7ee8ff"/><circle class="eye" cx="766" cy="450" r="3.4" fill="#7ee8ff"/>
+    <path d="M760 436 v-10" stroke="#3a3f48" stroke-width="3"/>
+    <circle class="blink" cx="760" cy="424" r="4" fill="#ff5a5a" style="animation-duration:2.2s"/>
+    <rect x="752" y="466" width="16" height="5" fill="#6c737b"/>
+  </g>
+  <g class="plaque"><rect x="626" y="529" width="60" height="13" rx="2" fill="url(#brass)" class="thin"/><text x="656" y="539.5" text-anchor="middle">the lab</text></g>
+</g>
+</a>
+
+<!-- ---- row 2 right: painting + sailboat sculpture → art ---- -->
+<a class="door" href="https://art.corentinbel.com" data-label="art" data-sub="generative pieces, fractals, sitar tuner">
+<g>
+  <g transform="rotate(-5 912 525)">
+    <rect x="836" y="372" width="150" height="150" rx="3" fill="#a87a3a" class="ink"/>
+    <rect x="848" y="384" width="126" height="126" fill="#f0a868"/>
+    <rect x="848" y="384" width="126" height="64" fill="#e2685a"/>
+    <rect x="848" y="384" width="126" height="30" fill="#7b4a8f"/>
+    <circle cx="930" cy="448" r="20" fill="#ffd38a"/>
+    <rect x="848" y="452" width="126" height="58" fill="#24467a"/>
+    <path d="M848 462 q20 -6 40 0 t40 0 t46 0 M848 478 q20 -6 40 0 t40 0 t46 0 M848 494 q20 -6 40 0 t40 0 t46 0" fill="none" stroke="#5a8acb" stroke-width="2"/>
+    <path d="M880 470 l14 -38 v38z M897 470 l10 -26 v26z" fill="#fff4dc"/>
+    <path d="M872 471 h40 l-6 7 h-28z" fill="#2b1a10"/>
+  </g>
+  <!-- sailboat sculpture -->
+  <rect x="1000" y="515" width="92" height="10" rx="3" fill="url(#woodH)" class="ink"/>
+  <path d="M1046 515 v-14" stroke="#2b1a10" stroke-width="4"/>
+  <path d="M1004 488 h86 q-8 16 -22 16 h-44 q-14 0 -20 -16z" fill="#7a3f1e" class="ink"/>
+  <path d="M1006 492 h82" stroke="#e8c37a" stroke-width="2"/>
+  <path d="M1046 486 V384" stroke="#2b1a10" stroke-width="4"/>
+  <path d="M1048 390 q36 40 30 92 h-30z" fill="#fff4dc" class="ink"/>
+  <path d="M1043 404 q-26 34 -28 78 h28z" fill="#f0e2c0" class="ink"/>
+  <path d="M1046 384 l16 6 -16 6z" fill="#e2685a" class="thin"/>
+  <g class="plaque"><rect x="938" y="529" width="44" height="13" rx="2" fill="url(#brass)" class="thin"/><text x="960" y="539.5" text-anchor="middle">art</text></g>
+</g>
+</a>
+
+<!-- ---- row 3 left: CRT tv with Smash + GameCube controller ---- -->
+<a class="deco" data-info="tv" tabindex="0" role="button" aria-label="CRT television">
+<g>
+  <rect x="536" y="574" width="180" height="128" rx="14" fill="#8b8478" class="ink"/>
+  <rect x="542" y="580" width="146" height="114" rx="18" fill="#2a2724" class="ink"/>
+  <rect x="551" y="589" width="128" height="96" rx="16" fill="url(#tvScreen)"/>
+  <g clip-path="url(#tvClip)">
+    <g id="tvStars" fill="#fff" opacity=".7"></g>
+    <path d="M572 650 h86 l-10 14 h-66z" fill="#1d1b2e" stroke="#7ad1ff" stroke-width="1.5"/>
+    <path d="M582 664 l33 14 l33 -14" fill="#151325" opacity=".9"/>
+    <g id="fighterA"><ellipse cx="0" cy="0" rx="6" ry="8" fill="#ff5a5a" stroke="#000" stroke-width="1"/><circle cx="2" cy="-3" r="1.4" fill="#fff"/></g>
+    <g id="fighterB"><ellipse cx="0" cy="0" rx="6" ry="8" fill="#5aa8ff" stroke="#000" stroke-width="1"/><circle cx="-2" cy="-3" r="1.4" fill="#fff"/></g>
+    <text id="pA" x="584" y="681" font-family="Inter, sans-serif" font-weight="600" font-size="9" fill="#ff8a8a">0%</text>
+    <text id="pB" x="634" y="681" font-family="Inter, sans-serif" font-weight="600" font-size="9" fill="#8ac4ff">0%</text>
+    <text id="game" x="615" y="634" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="600" font-size="24" fill="#ffd34a" stroke="#7a2a10" stroke-width="1.2" opacity="0">GAME!</text>
+    <rect class="scan" x="551" y="589" width="128" height="8" fill="#fff" opacity=".05"/>
+    <g opacity=".08" stroke="#000"><path id="scanlines"/></g>
+  </g>
+  <path d="M556 600 q6 -8 18 -8" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="3"/>
+  <circle cx="702" cy="604" r="6" fill="#4a453f" class="thin"/><circle cx="702" cy="624" r="6" fill="#4a453f" class="thin"/>
+  <path d="M694 644 h16 M694 650 h16 M694 656 h16 M694 662 h16" stroke="#4a453f" stroke-width="2"/>
+  <rect x="556" y="702" width="20" height="13" fill="#4a453f" class="thin"/><rect x="676" y="702" width="20" height="13" fill="#4a453f" class="thin"/>
+</g>
+</a>
+<a class="deco" data-info="gamecube" tabindex="0" role="button" aria-label="GameCube controller — press it">
+<g id="controller">
+  <path d="M718 690 q-20 -60 -2 -30" fill="none" stroke="#2a2440" stroke-width="2.5"/>
+  <path d="M738 676 q10 -12 26 -6 q16 -6 26 6 q10 12 4 30 q-4 10 -12 6 l-8 -8 h-20 l-8 8 q-8 4 -12 -6 q-6 -18 4 -30z" fill="#6b5bb3" class="ink"/>
+  <circle cx="748" cy="686" r="5" fill="#9d93c9" class="thin"/>
+  <circle cx="782" cy="686" r="6" fill="#3dbd6a" class="thin"/>
+  <circle cx="774" cy="694" r="3.4" fill="#e04848" class="thin"/>
+  <circle cx="790" cy="680" r="2.6" fill="#d9dde3" class="thin"/>
+  <circle cx="770" cy="701" r="3.6" fill="#ffd34a" class="thin"/>
+  <path d="M754 700 h6 M757 697 v6" stroke="#c7c1e0" stroke-width="2.2"/>
+</g>
+</a>
+
+<!-- ---- row 3 right: tabletop fountain, violets, heather ---- -->
+<a class="deco" data-info="fountain" tabindex="0" role="button" aria-label="Water fountain">
+<g>
+  <ellipse cx="893" cy="706" rx="54" ry="10" fill="#4a5560" class="ink"/>
+  <path d="M839 690 h108 v14 q0 10 -54 10 q-54 0 -54 -10z" fill="#7a868f" class="ink"/>
+  <ellipse cx="893" cy="690" rx="54" ry="9" fill="#5fa8c8" class="ink"/>
+  <ellipse class="ripple" cx="893" cy="690" rx="30" ry="5" fill="none" stroke="#d9f2ff" stroke-width="1.5"/>
+  <ellipse class="ripple" cx="893" cy="690" rx="30" ry="5" fill="none" stroke="#d9f2ff" stroke-width="1.5" style="animation-delay:.9s"/>
+  <rect x="886" y="640" width="14" height="50" fill="#7a868f" class="ink"/>
+  <path d="M866 640 h54 q-6 14 -27 14 q-21 0 -27 -14z" fill="#8a96a0" class="ink"/>
+  <ellipse cx="893" cy="640" rx="27" ry="5" fill="#5fa8c8" class="thin"/>
+  <rect x="889" y="616" width="8" height="24" rx="3" fill="#8a96a0" class="thin"/>
+  <path class="water" d="M893 614 q-20 -8 -30 26 M893 614 q20 -8 30 26" fill="none" stroke="#bfe8ff" stroke-width="2.5"/>
+  <path class="water" d="M868 646 q-10 10 -14 42 M918 646 q10 10 14 42" fill="none" stroke="#bfe8ff" stroke-width="2.5"/>
+</g>
+</a>
+<a class="deco" data-info="violet" tabindex="0" role="button" aria-label="Violets"><g id="violets"></g></a>
+<a class="deco" data-info="heather" tabindex="0" role="button" aria-label="Heather"><g id="heather"></g></a>
+
+<!-- ================= top of the shelf ================= -->
+<!-- anemometer → live wind -->
+<a class="door" href="https://wind.corentinbel.com" data-label="live wind" data-sub="forecast map for foilers">
+<g>
+  <rect x="560" y="104" width="44" height="14" rx="3" fill="#3a3f48" class="ink"/>
+  <path d="M582 104 V40" stroke="#9aa3ad" stroke-width="5"/>
+  <path d="M582 104 V40" stroke="#140b06" stroke-width="1" opacity=".6"/>
+  <g id="anemo"></g>
+  <circle cx="582" cy="38" r="5" fill="#d9dde3" class="thin"/>
+  <!-- vane -->
+  <g id="vane"><path d="M582 62 h34 l8 -8 v16 l-8 -8" fill="#e2685a" stroke="#140b06" stroke-width="1.4"/></g>
+  <g class="plaque"><rect x="546" y="132" width="72" height="13" rx="2" fill="url(#brass)" class="thin"/><text id="windTxt" x="582" y="142.5" text-anchor="middle">live wind</text></g>
+</g>
+</a>
+
+<!-- passionflower pot on top, vine trailing down the right post -->
+<a class="deco" data-info="passion" tabindex="0" role="button" aria-label="Passionflower"><g id="passion"></g></a>
+
+<!-- ================= foil board + foil leaning on the shelf → downthewind ================= -->
+<a class="door" href="https://downthewind.com" data-label="downthewind" data-sub="downwind foil runs in France">
+<g>
+  <!-- board -->
+  <g transform="rotate(5 1170 850)">
+    <path d="M1170 852 q-36 0 -36 -40 V390 q0 -80 36 -150 q36 70 36 150 v422 q0 40 -36 40z" fill="url(#boardG)" class="ink"/>
+    <path d="M1150 420 q20 -10 40 0 V790 q-20 10 -40 0z" fill="#16181c"/>
+    <path d="M1156 380 h28" stroke="#16181c" stroke-width="6" stroke-linecap="round"/>
+    <path d="M1170 252 q20 50 24 120" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="3"/>
+    <text x="0" y="0" transform="translate(1180 330) rotate(90)" font-family="Inter, sans-serif" font-weight="600" font-size="11" fill="#e8fff8" letter-spacing="1">7'2</text>
+  </g>
+  <!-- foil bolted under the board: mast sticks out sideways, wings stand vertical -->
+  <rect x="1196" y="668" width="14" height="40" rx="3" fill="#3a3f48" class="ink"/>
+  <path d="M1206 676 h104 l4 12 h-108z" fill="#1d1f24" class="ink"/>
+  <path d="M1212 680 h96" stroke="#fff" stroke-opacity=".15" stroke-width="2"/>
+  <path d="M1306 606 h14 v190 h-14z" fill="#2b2f36" class="ink"/>
+  <path d="M1262 800 q51 -20 102 0 q-6 10 -16 10 q-35 -8 -70 0 q-10 0 -16 -10z" fill="#1d1f24" class="ink"/>
+  <path d="M1286 606 q27 -12 54 0 q-4 7 -10 7 q-17 -5 -34 0 q-6 0 -10 -7z" fill="#1d1f24" class="ink"/>
+  <path d="M1272 801 q41 -14 82 0" fill="none" stroke="#2fb3a8" stroke-width="2"/>
+  <!-- luggage tag on the mast -->
+  <path d="M1262 688 q-4 18 4 30" fill="none" stroke="#e8d7a8" stroke-width="1.6"/>
+  <g class="plaque" transform="rotate(-6 1290 730)"><rect x="1236" y="716" width="96" height="18" rx="3" fill="url(#brass)" class="thin"/><circle cx="1243" cy="725" r="2.2" fill="#3a2408"/><text x="1288" y="729" text-anchor="middle">downthewind</text></g>
+</g>
+</a>
+
+<!-- ================= floor & sill plants ================= -->
+<a class="deco" data-info="hydrangea" tabindex="0" role="button" aria-label="Hydrangea"><g id="hydrangea"></g></a>
+<a class="deco" data-info="mimosa" tabindex="0" role="button" aria-label="Mimosa"><g id="mimosa"></g></a>
+<a class="deco" data-info="almond" tabindex="0" role="button" aria-label="Almond blossom"><g id="almond"></g></a>
+<a class="deco" data-info="rose" tabindex="0" role="button" aria-label="Damask rose"><g id="rose"></g></a>
+<a class="deco" data-info="fireplace" tabindex="0" role="button" aria-label="Fireplace"><rect x="130" y="640" width="180" height="212" fill="transparent"/></a>
+
+<!-- ================= light ================= -->
+<circle id="glow" cx="220" cy="780" r="520" fill="url(#fireGlow)" pointer-events="none" style="mix-blend-mode:screen"/>
+<rect x="-1600" y="-1000" width="4800" height="3000" fill="url(#vignette)" pointer-events="none"/>
+</svg>
 </div>
 
-<div id="ghost" aria-hidden="true"></div>
-
-<footer>
-  <a href="https://aboutme.corentinbel.com">about me</a> ·
-  <a href="https://lab.corentinbel.com">lab</a> ·
-  <a href="https://art.corentinbel.com">art</a> ·
-  <a href="https://wind.corentinbel.com">wind</a> ·
-  <a href="https://downthewind.com">downthewind</a>
-</footer>
+<div id="tip"><b></b> <span></span></div>
+<aside id="pane" aria-live="polite"><button class="x" aria-label="close">×</button><h2></h2><div class="latin"></div><p></p></aside>
+<div class="hint"><span class="wide">hover the shelf · click plants &amp; things for stories</span><span class="narrow">swipe ← → · tap things</span></div>
 
 <script>
-(function () {
-  'use strict';
+"use strict";
+const NS = "http://www.w3.org/2000/svg";
+const $ = id => document.getElementById(id);
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+// deterministic randomness so the room looks the same on every visit
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const R = rng(42);
+const rr = (a, b) => a + (b - a) * R();
+const pick = arr => arr[Math.floor(R() * arr.length)];
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var body = document.body;
-  var field = document.getElementById('field');
-  var canvas = document.getElementById('fx');
-  var ghost = document.getElementById('ghost');
-  var ctx = canvas.getContext('2d');
+/* ================= stories ================= */
+const INFO = {
+  mimosa:    { t: "Mimosa", l: "Acacia dealbata", p: "Not French at all: it comes from south-east Australia and reached the Côte d'Azur in the 19th century. It liked it so much that there is now a whole Route du Mimosa from Bormes-les-Mimosas to Grasse, blooming in the middle of winter." },
+  hydrangea: { t: "Hortensia", l: "Hydrangea macrophylla", p: "The soil picks the colour. In acidic soil the plant can take up aluminium and the flowers turn blue; in chalky, alkaline soil they stay pink. Gardeners bury rusty nails or add aluminium sulphate to coax them blue." },
+  passion:   { t: "Passiflore", l: "Passiflora caerulea", p: "Named by 17th-century Jesuit missionaries who read the Passion of Christ in its flower: the fringe as the crown of thorns, five stamens as the wounds, three stigmas as the nails. Its cousin Passiflora edulis gives passion fruit." },
+  cherry:    { t: "Cherry blossom", l: "Prunus serrulata", p: "Kyoto has written down its full-bloom dates since around 812 AD, one of the longest climate records on Earth. In 2021 the trees peaked earlier than in any year of those twelve centuries." },
+  almond:    { t: "Amandier", l: "Prunus dulcis", p: "Wild almonds are bitter and release cyanide when chewed; the sweet ones we eat come from a mutation that switched that off. Van Gogh painted Almond Blossom in 1890 to celebrate the birth of his nephew." },
+  heather:   { t: "Bruyère", l: "Erica arborea", p: "Briar pipes are carved from the knotted root burl of tree heath, and the English word 'briar' comes straight from the French bruyère. The burl survives fires, which is what makes it so dense and heat-proof." },
+  rose:      { t: "Rose de Damas", l: "Rosa × damascena", p: "The rose behind most rose oil. It takes roughly three to four tonnes of petals, picked at dawn before the sun burns the scent off, to distil one kilogram of oil in Bulgaria's Valley of Roses." },
+  violet:    { t: "Violettes", l: "Viola odorata", p: "Their scent, ionone, briefly switches off the smell receptors that detect it. So you smell violets, lose them, and smell them again a moment later: a flower that flirts." },
+  sitar:     { t: "Sitar", l: "my other instrument", p: "Seventeen-ish strings, a gourd, and patience. The sitar tuner in the art section defaults to my own instrument's tuning." },
+  shells:    { t: "Seashells", l: "pocket souvenirs", p: "Picked up on the beaches I sail from. Every one of them is a reminder that the best days end with salt in your hair." },
+  fountain:  { t: "Water fountain", l: "white noise, handmade", p: "Running water is the best focus soundtrack there is. Decoding brains is easier with a small river nearby." },
+  faker:     { t: "Faker", l: "Lee Sang-hyeok", p: "Six stars for six World Championships with T1 (2013, 2015, 2016, 2023, 2024, 2025). The greatest League of Legends player ever, still at the top more than a decade later. Respect." },
+  tv:        { t: "Smash on a CRT", l: "the only correct way", p: "Super Smash Bros on a GameCube, on a fat cathode-ray TV with zero input lag. Press the controller next to it." },
+  gamecube:  { t: "GameCube controller", l: "the indigo one", p: "Press it again. And again." },
+  kite:      { t: "Saint-Malo", l: "kite + mountainboard", p: "Low tide, the walled city behind, a kite in hand and four wheels on the sand. When there is no water to foil on, there is still wind." },
+  fireplace: { t: "Fireplace", l: "the warm side of the room", p: "Every good evening ends here: a fire, a sitar, and a long argument about whether the brain is a language model." },
+};
 
-  var LURE_EMOJI = { cheese: '\u{1F9C0}', wave: '\u{1F30A}', piano: '\u{1F3B9}', gust: '\u{1F4A8}', baguette: '\u{1F956}' };
+/* ================= starry sky + tv stars ================= */
+for (let i = 0; i < 40; i++) el("circle", { cx: rr(1268, 1492), cy: rr(128, 300), r: rr(.4, 1.4), opacity: rr(.3, 1) }, $("stars"));
+for (let i = 0; i < 24; i++) el("circle", { cx: rr(552, 678), cy: rr(590, 650), r: rr(.3, 1) }, $("tvStars"));
+{ let d = ""; for (let y = 590; y < 686; y += 3) d += `M551 ${y}h128`; $("scanlines").setAttribute("d", d); }
 
-  var SPECIES = [
-    { id: 'cr-mouse',  lure: 'cheese',   speed: 62, shy: 0.65, cur: 0.30, rgb: [255, 157, 122], f1: 0.9,  f2: 1.7  },
-    { id: 'cr-jelly',  lure: 'wave',     speed: 26, shy: 0.08, cur: 0.50, rgb: [180, 140, 232], f1: 0.35, f2: 0.6, sway: true },
-    { id: 'cr-bird',   lure: 'piano',    speed: 74, shy: 0.50, cur: 0.55, rgb: [140, 238, 221], f1: 1.1,  f2: 2.1  },
-    { id: 'cr-petrel', lure: 'gust',     speed: 96, shy: 0.18, cur: 0.20, rgb: [110, 168, 255], f1: 0.35, f2: 0.75 },
-    { id: 'cr-duck',   lure: 'baguette', speed: 52, shy: 0.12, cur: 0.70, rgb: [255, 196, 107], f1: 0.7,  f2: 1.3  }
-  ];
+/* ================= trophy stars ================= */
+function star(cx, cy, r, parent) {
+  let d = "";
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rad = i % 2 ? r * .45 : r; d += (i ? "L" : "M") + (cx + rad * Math.cos(a)).toFixed(1) + " " + (cy + rad * Math.sin(a)).toFixed(1); }
+  return el("path", { d: d + "z" }, parent);
+}
+for (let i = 0; i < 6; i++) star(925 + i * 14, 321.5, 5.4, $("trophyStars"));
 
-  var creatures = [];
-  var W = 0, H = 0, DPR = 1;
-  var pointer = { x: -9999, y: -9999, seen: false };
-  var lastPointerType = 'mouse';
-  var lure = null;             // { el, x, y, type, born }
-  var dust = [];
-  var sparks = [];
-  var running = false;
-  var rafId = 0;
-  var last = 0;
-
-  // ---------- helpers ----------
-  function rand(a, b) { return a + Math.random() * (b - a); }
-  function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
-  function dist(ax, ay, bx, by) { var dx = ax - bx, dy = ay - by; return Math.sqrt(dx * dx + dy * dy); }
-
-  function bounds() {
-    return { x0: 50, y0: 110, x1: W - 50, y1: H - 150 };
-  }
-
-  function resize() {
-    W = window.innerWidth; H = window.innerHeight;
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(W * DPR);
-    canvas.height = Math.round(H * DPR);
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    creatures.forEach(function (c) {
-      c.hw = c.el.offsetWidth / 2; c.hh = c.el.offsetHeight / 2;
-      var b = bounds();
-      c.x = clamp(c.x, b.x0, b.x1); c.y = clamp(c.y, b.y0, b.y1);
-    });
-  }
-
-  function spawnPop(x, y, glyph, color) {
-    var p = document.createElement('div');
-    p.className = 'pop';
-    p.textContent = glyph;
-    p.style.left = x + 'px';
-    p.style.top = y + 'px';
-    if (color) p.style.color = color;
-    field.appendChild(p);
-    p.addEventListener('animationend', function () { p.remove(); });
-    setTimeout(function () { p.remove(); }, 1400);
-  }
-
-  // ---------- creatures ----------
-  function initCreatures() {
-    var b = bounds();
-    SPECIES.forEach(function (s, i) {
-      var el = document.getElementById(s.id);
-      var inner = el.querySelector('.inner');
-      var c = {
-        el: el, inner: inner, spec: s,
-        x: rand(b.x0 + 60, b.x1 - 60),
-        y: b.y0 + (b.y1 - b.y0) * ((i + 0.5) / SPECIES.length) * rand(0.7, 1.1),
-        vx: 0, vy: 0,
-        p1: rand(0, 6.28), p2: rand(0, 6.28),
-        bias: rand(0, 6.28),
-        face: 1,
-        mode: 'wander',
-        timer: 0, cool: rand(0, 3),
-        orbitA: rand(0, 6.28),
-        hovered: false, armed: false, armTimer: 0,
-        trail: [],
-        hw: el.offsetWidth / 2, hh: el.offsetHeight / 2
-      };
-      c.y = clamp(c.y, b.y0, b.y1);
-
-      el.addEventListener('pointerenter', function () { c.hovered = true; });
-      el.addEventListener('pointerleave', function () { c.hovered = false; });
-      el.addEventListener('focus', function () { c.hovered = true; });
-      el.addEventListener('blur', function () { c.hovered = false; });
-      el.addEventListener('pointerdown', function (e) { lastPointerType = e.pointerType || 'mouse'; });
-      el.addEventListener('dragstart', function (e) { e.preventDefault(); });
-      // touch: first tap shows the tag, second tap navigates
-      el.addEventListener('click', function (e) {
-        if (lastPointerType === 'touch' && !c.armed) {
-          e.preventDefault();
-          creatures.forEach(function (o) { o.armed = false; o.el.classList.remove('armed'); });
-          c.armed = true; c.armTimer = 3.5;
-          el.classList.add('armed');
-        }
-      });
-      creatures.push(c);
-    });
-  }
-
-  function setMode(c, mode, t) {
-    c.mode = mode;
-    c.timer = t || 0;
-    if (mode === 'orbit') c.el.classList.add('excited');
-    else c.el.classList.remove('excited');
-  }
-
-  function update(c, dt, t) {
-    var s = c.spec;
-    var b = bounds();
-
-    if (c.armed) {
-      c.armTimer -= dt;
-      if (c.armTimer <= 0) { c.armed = false; c.el.classList.remove('armed'); }
+/* ================= books ================= */
+{
+  const g = $("books"), cols = ["#7a2e2e", "#2e4a7a", "#3d6b4a", "#a87a3a", "#5a3a6e", "#2a5a62", "#8a5a2a", "#6e2a4a", "#c9b38a"];
+  let x = 522;
+  while (x < 1086) {
+    if (x > 760 && x < 800) { // a flat stack
+      for (let k = 0; k < 4; k++) el("rect", { x: x, y: 832 - (k + 1) * 13, width: 64 - k * 5, height: 13, rx: 2, fill: pick(cols), class: "thin" }, g);
+      x += 70; continue;
     }
-
-    var tvx = 0, tvy = 0;
-    var pd = pointer.seen ? dist(c.x, c.y, pointer.x, pointer.y) : 1e9;
-
-    if (c.hovered || c.armed) {
-      // never escape a creature the visitor has reached
-      tvx = 0; tvy = 0;
-    } else if (c.mode === 'flee') {
-      c.timer -= dt;
-      var fa = Math.atan2(c.y - pointer.y, c.x - pointer.x);
-      tvx = Math.cos(fa) * s.speed * 1.9;
-      tvy = Math.sin(fa) * s.speed * 1.9;
-      if (c.timer <= 0) { setMode(c, 'wander'); c.cool = rand(5, 9); }
-    } else if (c.mode === 'approach') {
-      c.timer -= dt;
-      if (pd > 90 && pointer.seen) {
-        var aa = Math.atan2(pointer.y - c.y, pointer.x - c.x);
-        tvx = Math.cos(aa) * s.speed * 0.8;
-        tvy = Math.sin(aa) * s.speed * 0.8;
-      }
-      if (c.timer <= 0 || !pointer.seen) { setMode(c, 'wander'); c.cool = rand(4, 8); }
-    } else if (c.mode === 'rush' && lure) {
-      var ld = dist(c.x, c.y, lure.x, lure.y);
-      if (ld < 62) {
-        setMode(c, 'orbit');
-      } else {
-        var ra = Math.atan2(lure.y - c.y, lure.x - c.x);
-        tvx = Math.cos(ra) * s.speed * 2.1;
-        tvy = Math.sin(ra) * s.speed * 2.1;
-      }
-    } else if (c.mode === 'orbit' && lure) {
-      c.orbitA += dt * 1.5;
-      var ox = lure.x + Math.cos(c.orbitA) * 48;
-      var oy = lure.y + Math.sin(c.orbitA) * 40;
-      tvx = (ox - c.x) * 4;
-      tvy = (oy - c.y) * 4;
-      if (Math.random() < 0.1) {
-        sparks.push({ x: c.x + rand(-14, 14), y: c.y + rand(-14, 14), vy: rand(-30, -14), life: 1, rgb: s.rgb });
-      }
-    } else if (c.mode === 'sniff' && lure) {
-      var sd = dist(c.x, c.y, lure.x, lure.y);
-      if (sd < 74) {
-        setMode(c, 'sniffwait', 0.9);
-      } else {
-        var sa = Math.atan2(lure.y - c.y, lure.x - c.x);
-        tvx = Math.cos(sa) * s.speed * 0.9;
-        tvy = Math.sin(sa) * s.speed * 0.9;
-      }
-    } else if (c.mode === 'sniffwait') {
-      c.timer -= dt;
-      if (c.timer <= 0) {
-        spawnPop(c.x, c.y - c.hh - 8, '?', 'rgb(' + s.rgb.join(',') + ')');
-        setMode(c, 'wander');
-        c.cool = rand(3, 5);
-        if (lure) { // stroll off, unimpressed
-          var wa = Math.atan2(c.y - lure.y, c.x - lure.x) + rand(-0.5, 0.5);
-          c.vx = Math.cos(wa) * s.speed; c.vy = Math.sin(wa) * s.speed;
-        }
-      }
-    } else { // wander (also fallback when a lure vanished mid-mode)
-      if (c.mode !== 'wander') setMode(c, 'wander');
-      c.bias += rand(-0.5, 0.5) * dt * 1.6;
-      var na = c.bias + Math.sin(t * s.f1 + c.p1) * 1.3 + Math.sin(t * s.f2 + c.p2) * 0.7;
-      tvx = Math.cos(na) * s.speed;
-      tvy = Math.sin(na) * s.speed;
-
-      // pointer encounter: occasionally flee (shyness) or come look (curiosity)
-      c.cool -= dt;
-      if (pointer.seen && pd < 170 && c.cool <= 0 && !lure) {
-        var roll = Math.random();
-        if (roll < s.shy) setMode(c, 'flee', rand(0.7, 1.2));
-        else if (roll < s.shy + s.cur) setMode(c, 'approach', rand(2.5, 4));
-        else c.cool = rand(2.5, 4);
-      }
-    }
-
-    // soft steering back into bounds
-    if (c.x < b.x0 + 40) tvx += (b.x0 + 40 - c.x) * 2.2;
-    if (c.x > b.x1 - 40) tvx -= (c.x - (b.x1 - 40)) * 2.2;
-    if (c.y < b.y0 + 30) tvy += (b.y0 + 30 - c.y) * 2.2;
-    if (c.y > b.y1 - 30) tvy -= (c.y - (b.y1 - 30)) * 2.2;
-
-    var k = clamp(dt * ((c.mode === 'rush' || c.mode === 'flee') ? 5 : 2.2), 0, 1);
-    c.vx += (tvx - c.vx) * k;
-    c.vy += (tvy - c.vy) * k;
-    c.x = clamp(c.x + c.vx * dt, b.x0, b.x1);
-    c.y = clamp(c.y + c.vy * dt, b.y0, b.y1);
-
-    // trail
-    var sp = Math.sqrt(c.vx * c.vx + c.vy * c.vy);
-    if (sp > 12) c.trail.push({ x: c.x, y: c.y + c.hh * 0.4, life: 1 });
-    if (c.trail.length > 26) c.trail.shift();
-    for (var i = c.trail.length - 1; i >= 0; i--) {
-      c.trail[i].life -= dt * 1.4;
-      if (c.trail[i].life <= 0) c.trail.splice(i, 1);
-    }
-
-    // orientation + squash-and-stretch
-    if (Math.abs(c.vx) > 14) c.face = c.vx >= 0 ? 1 : -1;
-    var sq = clamp(sp / (s.speed * 1.8), 0, 1);
-    var sx = 1 + 0.16 * sq, sy = 1 - 0.12 * sq;
-    var tilt;
-    if (s.sway) { tilt = clamp(c.vx * 0.005, -0.3, 0.3); c.face = 1; }
-    else { tilt = clamp(Math.atan2(c.vy, Math.abs(c.vx) + 20) * 0.55, -0.5, 0.5); }
-
-    c.el.style.transform = 'translate3d(' + (c.x - c.hw).toFixed(1) + 'px,' + (c.y - c.hh).toFixed(1) + 'px,0)';
-    c.inner.style.transform = 'scale(' + (c.face * sx).toFixed(3) + ',' + sy.toFixed(3) + ') rotate(' + tilt.toFixed(3) + 'rad)';
+    const w = rr(14, 26), h = rr(70, 98), c = pick(cols);
+    el("rect", { x, y: 840 - h, width: w, height: h, rx: 2, fill: c, class: "thin" }, g);
+    el("path", { d: `M${x + 3} ${840 - h + 12}h${w - 6}M${x + 3} ${840 - 14}h${w - 6}`, stroke: "#e8c37a", "stroke-width": 1.4, opacity: .7 }, g);
+    x += w + rr(0, 2);
   }
+  // a leaning one at the end
+  el("rect", { x: 1070, y: 760, width: 18, height: 84, rx: 2, fill: "#2e4a7a", class: "thin", transform: "rotate(12 1088 840)" }, g);
+}
 
-  // ---------- lures ----------
-  function removeLure(fast) {
-    if (!lure) return;
-    var el = lure.el;
-    clearTimeout(lure.fadeT); clearTimeout(lure.killT);
-    if (fast) el.remove();
-    else { el.classList.add('fading'); setTimeout(function () { el.remove(); }, 2100); }
-    lure = null;
-    creatures.forEach(function (c) {
-      if (c.mode === 'rush' || c.mode === 'orbit' || c.mode === 'sniff' || c.mode === 'sniffwait') setMode(c, 'wander');
-    });
+/* ================= test tubes ================= */
+{
+  const g = $("tubes"), liquids = ["#4ff0d0", "#ff5ab4", "#ffb84a", "#9dff5a"];
+  el("rect", { x: 530, y: 512, width: 132, height: 12, rx: 3, fill: "url(#woodH)", class: "ink" }, g);
+  for (let i = 0; i < 4; i++) {
+    const x = 546 + i * 30;
+    el("path", { d: `M${x} 410 v88 a9 9 0 0 0 18 0 v-88`, fill: "url(#glass)", stroke: "#d9efff", "stroke-opacity": .75, "stroke-width": 2 }, g);
+    const top = 448 + i * 8;
+    el("path", { d: `M${x + 1.5} ${top} v50 a7.5 7.5 0 0 0 15 0 v-50z`, fill: liquids[i], opacity: .9 }, g);
+    el("circle", { cx: x + 9, cy: top + 20, r: 14, fill: liquids[i], opacity: .14, filter: "url(#blur6)" }, g);
+    for (let b = 0; b < 2; b++) el("circle", { class: "bubble", cx: x + 6 + b * 6, cy: 500, r: 2, fill: "#fff", style: `animation-delay:${(i * .7 + b * 1.3).toFixed(1)}s;animation-duration:${(2 + i * .4).toFixed(1)}s` }, g);
   }
+  el("rect", { x: 530, y: 452, width: 132, height: 10, rx: 3, fill: "url(#woodH)", class: "ink" }, g);
+  el("path", { d: "M536 462 v50 M656 462 v50", stroke: "#4f2f1b", "stroke-width": 6 }, g);
+}
 
-  function placeLure(type, x, y) {
-    removeLure(true);
-    var b = bounds();
-    x = clamp(x, b.x0 + 20, b.x1 - 20);
-    y = clamp(y, b.y0 + 20, b.y1 - 20);
-    var el = document.createElement('div');
-    el.className = 'lure';
-    el.textContent = LURE_EMOJI[type];
-    el.style.left = x + 'px';
-    el.style.top = y + 'px';
-    field.appendChild(el);
-    lure = { el: el, x: x, y: y, type: type };
-    lure.fadeT = setTimeout(function () { if (lure && lure.el === el) el.classList.add('fading'); }, 13000);
-    lure.killT = setTimeout(function () { if (lure && lure.el === el) removeLure(true); }, 15000);
+/* ================= plants ================= */
+function pot(g, cx, base, w, h) {
+  el("path", { d: `M${cx - w / 2} ${base - h} h${w} l-${w * .1} ${h} h-${w * .8}z`, fill: "url(#terracotta)", class: "ink" }, g);
+  el("rect", { x: cx - w / 2 - 4, y: base - h - 8, width: w + 8, height: 10, rx: 2, fill: "#b55d36", class: "ink" }, g);
+}
+function vase(g, cx, base, w, h, fill) {
+  el("path", { d: `M${cx - w * .25} ${base - h} q-${w * .1} ${h * .3} -${w * .25} ${h * .55} q-${w * .1} ${h * .45} ${w * .25} ${h * .45} h${w * .5} q${w * .35} 0 ${w * .25} -${h * .45} q-${w * .15} -${h * .25} -${w * .25} -${h * .55}z`, fill, class: "ink" }, g);
+}
+function blossom(g, cx, cy, r, petal, centre, rot) {
+  for (let i = 0; i < 5; i++) {
+    const a = rot + i * Math.PI * 2 / 5;
+    el("ellipse", { cx: cx + Math.cos(a) * r * .55, cy: cy + Math.sin(a) * r * .55, rx: r * .55, ry: r * .4, fill: petal, transform: `rotate(${a * 180 / Math.PI} ${cx + Math.cos(a) * r * .55} ${cy + Math.sin(a) * r * .55})` }, g);
+  }
+  el("circle", { cx, cy, r: r * .28, fill: centre }, g);
+}
+// branch = list of points; returns points along it for blossoms
+function branch(g, pts, width, color) {
+  let d = `M${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) d += ` L${pts[i][0]} ${pts[i][1]}`;
+  el("path", { d, fill: "none", stroke: color, "stroke-width": width, "stroke-linecap": "round", "stroke-linejoin": "round" }, g);
+}
 
-    var match = null, others = [];
-    creatures.forEach(function (c) {
-      if (c.spec.lure === type) match = c; else others.push(c);
-    });
-    if (match) {
-      spawnPop(match.x, match.y - match.hh - 8, '!', 'rgb(' + match.spec.rgb.join(',') + ')');
-      setMode(match, 'rush');
-    }
-    // comedy: sometimes one wrong creature wanders over, sniffs, leaves
-    if (others.length && Math.random() < 0.35) {
-      var wrong = others[Math.floor(Math.random() * others.length)];
-      setTimeout(function () {
-        if (lure && lure.el === el && wrong.mode === 'wander' && !wrong.hovered) setMode(wrong, 'sniff');
-      }, 900);
+// cherry blossom: tall vase on the mantle, pink clusters
+{
+  const g = el("g", { class: "sway" }, $("cherry"));
+  const stems = [[[96, 470], [84, 410], [70, 360], [52, 330]], [[100, 470], [104, 400], [120, 350], [116, 300]], [[104, 470], [126, 420], [150, 395]], [[90, 440], [60, 420], [40, 425]]];
+  for (const s of stems) branch(g, s, 3.5, "#3a2418");
+  for (const s of stems) for (let i = 1; i < s.length; i++) {
+    const [x0, y0] = s[i - 1], [x1, y1] = s[i];
+    for (let k = 0; k < 6; k++) { const t = R(); blossom(g, x0 + (x1 - x0) * t + rr(-9, 9), y0 + (y1 - y0) * t + rr(-9, 9), rr(5, 8), pick(["#ffc1d6", "#ffb0cb", "#ffd6e4"]), "#d44a7a", R() * 6); }
+  }
+  vase($("cherry"), 100, 520, 50, 62, "#2f5f8a");
+  el("path", { d: "M88 484 q12 -4 24 0", stroke: "#e8f2ff", "stroke-width": 2, fill: "none", opacity: .6 }, $("cherry"));
+}
+
+// almond blossom: small glass vase on the window sill, sparse white flowers
+{
+  const g = el("g", { class: "sway", style: "animation-delay:-3s" }, $("almond"));
+  const stems = [[[1296, 448], [1290, 400], [1276, 360], [1282, 320]], [[1300, 448], [1312, 396], [1336, 366]], [[1294, 430], [1272, 404]]];
+  for (const s of stems) branch(g, s, 3, "#2e1d14");
+  for (const s of stems) for (let i = 1; i < s.length; i++) {
+    const [x0, y0] = s[i - 1], [x1, y1] = s[i];
+    for (let k = 0; k < 3; k++) { const t = R(); blossom(g, x0 + (x1 - x0) * t + rr(-6, 6), y0 + (y1 - y0) * t + rr(-6, 6), rr(6, 8.5), pick(["#fff8f4", "#fdebf0"]), "#c2365e", R() * 6); }
+  }
+  el("path", { d: "M1286 448 q-4 -24 4 -34 h20 q8 10 4 34z", fill: "url(#glass)", stroke: "#d9efff", "stroke-opacity": .7, "stroke-width": 2 }, $("almond"));
+}
+
+// damask rose: pot on the window sill
+{
+  const g = $("rose");
+  const leaves = el("g", {}, g);
+  for (let i = 0; i < 16; i++) el("ellipse", { cx: rr(1440, 1490), cy: rr(392, 434), rx: 8, ry: 4.5, fill: pick(["#2f6b3a", "#3d7d44", "#28572f"]), transform: `rotate(${rr(-60, 60)} 1465 410)` }, leaves);
+  for (const [x, y, r] of [[1452, 392, 11], [1478, 400, 9.5], [1466, 378, 8]]) {
+    el("circle", { cx: x, cy: y, r, fill: "#d9467a", class: "thin" }, g);
+    el("circle", { cx: x, cy: y, r: r * .68, fill: "#ec6b98" }, g);
+    el("path", { d: `M${x - r * .4} ${y} q${r * .4} -${r * .5} ${r * .8} 0 q-${r * .4} ${r * .4} -${r * .5} -${r * .1}`, fill: "none", stroke: "#a8275a", "stroke-width": 1.5 }, g);
+  }
+  pot(g, 1465, 446, 40, 24);
+}
+
+// hydrangea: floor pot right of the foil
+{
+  const g = el("g", { class: "sway", style: "animation-delay:-1.5s" }, $("hydrangea"));
+  for (let i = 0; i < 18; i++) el("ellipse", { cx: rr(1356, 1440), cy: rr(735, 800), rx: rr(13, 18), ry: rr(8, 11), fill: pick(["#2f6b3a", "#3d7d44", "#28572f"]), class: "thin", transform: `rotate(${rr(-40, 40)} 1398 770)` }, g);
+  for (const [cx, cy, rad, cols] of [[1372, 742, 28, ["#6f8de8", "#8aa6f0", "#5a74d6", "#a7b8f5"]], [1420, 732, 30, ["#c084e0", "#d39cec", "#a96cd0", "#e2b6f3"]], [1396, 706, 26, ["#7fa0ee", "#b88ce6", "#9db4f3"]]]) {
+    el("circle", { cx, cy, r: rad, fill: cols[0], class: "thin" }, g);
+    for (let k = 0; k < 34; k++) { const a = R() * 6.28, d = Math.sqrt(R()) * rad * .85; blossom(g, cx + Math.cos(a) * d, cy + Math.sin(a) * d, rr(4.5, 6.5), pick(cols), "#f4f0ff", R() * 6); }
+  }
+  pot($("hydrangea"), 1398, 856, 70, 54);
+}
+
+// mimosa: big floor pot far right, feathery green + yellow pompoms
+{
+  const g = $("mimosa");
+  el("path", { d: "M1508 806 q-6 -120 8 -230 M1510 700 q-30 -40 -50 -80 M1512 640 q30 -30 40 -70", fill: "none", stroke: "#4a3020", "stroke-width": 7, "stroke-linecap": "round" }, g);
+  const crown = el("g", { class: "sway", style: "animation-delay:-4s" }, g);
+  for (let i = 0; i < 70; i++) {
+    const x = rr(1440, 1580), y = rr(486, 690), a = rr(-50, 50);
+    const leaf = el("g", { transform: `translate(${x} ${y}) rotate(${a})` }, crown);
+    el("path", { d: "M-16 0 H16", stroke: "#56806a", "stroke-width": 1.4 }, leaf);
+    for (let k = -14; k <= 14; k += 4) el("path", { d: `M${k} 0 l-2 -5 M${k} 0 l-2 5`, stroke: pick(["#7fa38c", "#6b9480"]), "stroke-width": 1.6 }, leaf);
+  }
+  for (let i = 0; i < 150; i++) {
+    const a = R() * 6.28, d = Math.sqrt(R());
+    el("circle", { cx: 1512 + Math.cos(a) * d * 66, cy: 590 + Math.sin(a) * d * 95, r: rr(3, 5.2), fill: pick(["#ffd400", "#ffe14a", "#f5c400", "#fff07a"]), stroke: "#b88a00", "stroke-width": .6 }, crown);
+  }
+  pot(g, 1510, 862, 92, 64);
+}
+
+// violets: small pot, heart leaves, purple flowers
+{
+  const g = $("violets");
+  for (let i = 0; i < 10; i++) {
+    const x = rr(966, 1010), y = rr(668, 690);
+    el("path", { d: `M${x} ${y + 8} q-10 -6 -6 -14 q4 -6 6 0 q2 -6 6 0 q4 8 -6 14z`, fill: pick(["#2f6b3a", "#3d7d44"]), class: "thin" }, g);
+  }
+  for (let i = 0; i < 6; i++) {
+    const x = rr(966, 1012), y = rr(650, 672);
+    el("path", { d: `M${x} ${y} q2 10 0 22`, stroke: "#3d7d44", "stroke-width": 1.5, fill: "none" }, g);
+    blossom(g, x, y, 7, pick(["#6a3fb5", "#7d4cc9", "#5a32a0"]), "#ffd34a", R() * 6);
+  }
+  pot(g, 988, 714, 44, 26);
+}
+
+// heather: upright spikes of tiny pink bells
+{
+  const g = $("heather");
+  for (let i = 0; i < 9; i++) {
+    const x = 1040 + i * 6 + rr(-2, 2), top = rr(620, 650), lean = rr(-8, 8);
+    el("path", { d: `M${x} 690 Q${x + lean / 2} ${(690 + top) / 2} ${x + lean} ${top}`, stroke: "#4a6b3a", "stroke-width": 1.6, fill: "none" }, g);
+    for (let y = top + 2; y < 682; y += 4.5) {
+      const t = (690 - y) / (690 - top);
+      el("circle", { cx: x + lean * t * t + rr(-2.5, 2.5), cy: y, r: rr(1.8, 2.8), fill: pick(["#d65aa6", "#e679b8", "#c04a92", "#f09ac9"]) }, g);
     }
   }
+  pot(g, 1066, 714, 50, 26);
+}
 
-  // ---------- tray: drag OR tap-then-tap ----------
-  var pickedType = null;
-  var drag = null; // { type, id, startX, startY, moved }
-
-  function clearPicked() {
-    pickedType = null;
-    document.querySelectorAll('.token.picked').forEach(function (t) { t.classList.remove('picked'); });
+// passionflower: pot on top of the shelf, vine down the right post
+{
+  const g = $("passion");
+  const vine = "M1080 104 C1120 120 1126 160 1118 210 S1132 300 1124 360 S1110 450 1126 520 S1134 600 1118 650";
+  el("path", { d: vine, fill: "none", stroke: "#3d6b3a", "stroke-width": 3 }, g);
+  el("path", { d: "M1080 104 C1060 120 1040 116 1020 108", fill: "none", stroke: "#3d6b3a", "stroke-width": 2.5 }, g);
+  // sample points along the vine with a temporary path
+  const tmp = el("path", { d: vine, fill: "none", stroke: "none" }, $("room"));
+  const L = tmp.getTotalLength();
+  for (let s = 20; s < L; s += 26) {
+    const p = tmp.getPointAtLength(s), side = (s / 26) % 2 ? 1 : -1;
+    const leaf = el("g", { transform: `translate(${p.x + side * 8} ${p.y}) rotate(${side * 30})` }, g);
+    for (const a of [-35, 0, 35]) el("ellipse", { cx: 0, cy: -7, rx: 3.6, ry: 8, fill: "#3d7d44", class: "thin", transform: `rotate(${a})` }, leaf);
   }
+  for (const s of [L * .22, L * .55, L * .86]) {
+    const p = tmp.getPointAtLength(s), fl = el("g", { transform: `translate(${p.x + 6} ${p.y})` }, g);
+    for (let i = 0; i < 10; i++) { const a = i * 36; el("ellipse", { cx: 0, cy: -9, rx: 3.4, ry: 9, fill: "#f6f2ff", stroke: "#b9a8e0", "stroke-width": .6, transform: `rotate(${a})` }, fl); }
+    el("circle", { r: 8, fill: "none", stroke: "#5a2f9a", "stroke-width": 3, "stroke-dasharray": "1.5 1.2" }, fl);
+    el("circle", { r: 5, fill: "#f4f0ff" }, fl);
+    el("circle", { r: 4.6, fill: "none", stroke: "#3a1a6e", "stroke-width": 2, "stroke-dasharray": "1 1.5" }, fl);
+    for (let i = 0; i < 3; i++) el("path", { d: `M0 0 L${(Math.cos(i * 2.1) * 4).toFixed(1)} ${(Math.sin(i * 2.1) * 4 - 2).toFixed(1)}`, stroke: "#7a4a2a", "stroke-width": 1.4 }, fl);
+    el("circle", { r: 1.6, fill: "#c8e04a" }, fl);
+  }
+  tmp.remove();
+  pot(g, 1080, 118, 46, 28);
+}
 
-  document.querySelectorAll('.token').forEach(function (btn) {
-    var type = btn.dataset.lure;
-    btn.addEventListener('pointerdown', function (e) {
-      lastPointerType = e.pointerType || 'mouse';
-      e.preventDefault();
-      drag = { type: type, id: e.pointerId, startX: e.clientX, startY: e.clientY, moved: false };
-      try { btn.setPointerCapture(e.pointerId); } catch (err) {}
-    });
-    btn.addEventListener('pointermove', function (e) {
-      if (!drag || e.pointerId !== drag.id) return;
-      if (!drag.moved && dist(e.clientX, e.clientY, drag.startX, drag.startY) > 9) {
-        drag.moved = true;
-        ghost.textContent = LURE_EMOJI[type];
-        ghost.style.display = 'block';
-      }
-      if (drag.moved) {
-        ghost.style.left = e.clientX + 'px';
-        ghost.style.top = e.clientY + 'px';
-      }
-    });
-    btn.addEventListener('pointerup', function (e) {
-      if (!drag || e.pointerId !== drag.id) return;
-      ghost.style.display = 'none';
-      if (drag.moved) {
-        var trayTop = document.getElementById('tray').getBoundingClientRect().top;
-        if (e.clientY < trayTop - 12) placeLure(type, e.clientX, e.clientY);
-        clearPicked();
-      } else {
-        // tap: pick this lure, next tap on the field drops it
-        if (pickedType === type) clearPicked();
-        else { clearPicked(); pickedType = type; btn.classList.add('picked'); }
-      }
-      drag = null;
-    });
-    btn.addEventListener('pointercancel', function () { ghost.style.display = 'none'; drag = null; });
+/* ================= live wind on the anemometer ================= */
+let windKn = 8;   // gentle default until the forecast answers
+let windDir = 270;
+fetch("https://api.open-meteo.com/v1/forecast?latitude=43.42&longitude=6.77&current=wind_speed_10m,wind_direction_10m&wind_speed_unit=kn")
+  .then(r => r.json())
+  .then(d => {
+    if (!d.current) return;
+    windKn = d.current.wind_speed_10m; windDir = d.current.wind_direction_10m;
+    $("windTxt").textContent = `${Math.round(windKn)} kn · Fréjus`;
+  })
+  .catch(() => {});
+const anemo = $("anemo");
+let anemoAngle = 0;
+function drawAnemo() {
+  anemo.textContent = "";
+  const cx = 582, cy = 40, rx = 34, ry = 9;
+  const cups = [0, 1, 2].map(i => anemoAngle + i * 2 * Math.PI / 3)
+    .map(a => ({ a, x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a), z: Math.sin(a) }))
+    .sort((p, q) => p.z - q.z);
+  for (const c of cups) {
+    el("path", { d: `M${cx} ${cy} L${c.x.toFixed(1)} ${c.y.toFixed(1)}`, stroke: "#9aa3ad", "stroke-width": 3 }, anemo);
+    const facing = Math.cos(c.a + Math.PI / 2);   // cup opening toward or away from the viewer
+    el("ellipse", { cx: c.x.toFixed(1), cy: c.y.toFixed(1), rx: (4 + 4 * Math.abs(facing)).toFixed(1), ry: 7, fill: facing > 0 ? "#e2685a" : "#a8443a", stroke: "#140b06", "stroke-width": 1.4 }, anemo);
+  }
+}
+
+/* ================= fire ================= */
+const fireG = $("fire"), embersG = $("embers");
+// three layers of flame tongues (outer red → inner yellow), each tongue wobbling on its own
+const LAYERS = [
+  { fill: "#e0431b", n: 6, w: 34, h: 110, spread: 92 },
+  { fill: "#ff8f24", n: 5, w: 28, h: 84, spread: 70 },
+  { fill: "#ffd860", n: 4, w: 20, h: 52, spread: 48 },
+  { fill: "#fff6d0", n: 2, w: 12, h: 26, spread: 20 },
+];
+const tongues = [];
+for (const L of LAYERS) for (let i = 0; i < L.n; i++) {
+  const off = L.n === 1 ? 0 : (i / (L.n - 1) - .5) * L.spread;
+  tongues.push({ e: el("path", { fill: L.fill, stroke: "#7a1a08", "stroke-width": L.fill === "#e0431b" ? 2 : 0, "stroke-opacity": .5 }, fireG), x: 220 + off, w: L.w, h: L.h * (1 - Math.abs(off) / (L.spread + 40)), ph: R() * 10, fr: rr(5, 9) });
+}
+const embers = [];
+for (let i = 0; i < 12; i++) embers.push({ e: el("circle", { r: 1.6, fill: "#ffcf6a" }, embersG), life: 0, max: 1 });
+function respawnEmber(f) { f.x = rr(185, 255); f.y = 805; f.vx = rr(-10, 10); f.vy = rr(-40, -70); f.max = rr(1.2, 2.4); f.life = 0; }
+embers.forEach(f => { respawnEmber(f); f.life = R() * f.max; });
+
+/* ================= tv: tiny fighters ================= */
+const fA = $("fighterA"), fB = $("fighterB");
+const fighters = [{ e: fA, x: 595, y: 642, vy: 0, t: 0, dmg: 0, txt: $("pA") }, { e: fB, x: 635, y: 642, vy: 0, t: 1.3, dmg: 0, txt: $("pB") }];
+let gameFlash = 0;
+function smashHit(power = 1) {
+  const f = pick(fighters);
+  f.dmg += Math.round(rr(6, 24) * power); f.vy = -rr(60, 120);
+  if (f.dmg > 140) { gameFlash = 1.6; fighters.forEach(q => q.dmg = 0); }
+}
+
+/* ================= laptop terminal ================= */
+const LINES = ["$ python decode.py --sub 07", "loading MEG … 306 ch", "fitting ridge … done", "r = 0.12  (chance 0.00)", "$ git push", "✓ pushed to main", "$ check wind --spot frejus", "18 kn W · go foil", "$ ▍"];
+const term = $("term");
+let termLine = 0, termChar = 0, termHold = 0;
+function renderTerm() {
+  term.textContent = "";
+  const shown = LINES.slice(Math.max(0, termLine - 7), termLine + 1);
+  shown.forEach((ln, i) => {
+    const isLast = i === shown.length - 1;
+    el("tspan", { x: 563, dy: i ? 10 : 0 }, term).textContent = isLast ? ln.slice(0, termChar) : ln;
   });
+}
 
-  // drop a picked lure on the field
-  document.addEventListener('pointerdown', function (e) {
-    lastPointerType = e.pointerType || 'mouse';
-    if (!pickedType) return;
-    if (e.target.closest('#tray') || e.target.closest('.creature') ||
-        e.target.closest('footer') || e.target.closest('header')) return;
-    placeLure(pickedType, e.clientX, e.clientY);
-    clearPicked();
+/* ================= robot eyes follow the cursor ================= */
+const eyes = [...document.querySelectorAll(".eye")];
+const eyeHome = eyes.map(e => [+e.getAttribute("cx"), +e.getAttribute("cy")]);
+const svg = $("room");
+function svgPoint(evt) {
+  const pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+addEventListener("pointermove", e => {
+  const p = svgPoint(e);
+  eyes.forEach((eye, i) => {
+    const [hx, hy] = eyeHome[i], dx = p.x - hx, dy = p.y - hy, d = Math.hypot(dx, dy) || 1;
+    eye.setAttribute("cx", (hx + dx / d * 2).toFixed(2)); eye.setAttribute("cy", (hy + dy / d * 1.6).toFixed(2));
   });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') clearPicked();
+});
+
+/* ================= main loop ================= */
+const pg = $("paraglider"), glow = $("glow"), vane = $("vane");
+let last = performance.now(), T = 14;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now; T += dt;
+
+  // fire
+  let heat = 0;
+  for (const f of tongues) {
+    const a = f.ph + T * f.fr;
+    const h = f.h * (.78 + .14 * Math.sin(a) + .08 * Math.sin(a * 2.3 + 1)), tip = Math.sin(a * .7) * f.w * .5 + Math.sin(a * 1.9) * 4;
+    const b = 826, x0 = f.x - f.w / 2, x1 = f.x + f.w / 2;
+    f.e.setAttribute("d", `M${x0.toFixed(1)} ${b} C${(x0 - 4).toFixed(1)} ${(b - h * .45).toFixed(1)} ${(f.x + tip * .4 - f.w * .3).toFixed(1)} ${(b - h * .7).toFixed(1)} ${(f.x + tip).toFixed(1)} ${(b - h).toFixed(1)} C${(f.x + tip * .4 + f.w * .3).toFixed(1)} ${(b - h * .7).toFixed(1)} ${(x1 + 4).toFixed(1)} ${(b - h * .45).toFixed(1)} ${x1.toFixed(1)} ${b} Z`);
+    heat += h / f.h;
+  }
+  for (const f of embers) {
+    f.life += dt;
+    if (f.life > f.max || f.y < 650) respawnEmber(f);
+    f.x += (f.vx + Math.sin(T * 3 + f.max * 10) * 12) * dt; f.y += f.vy * dt;
+    f.e.setAttribute("cx", f.x.toFixed(1)); f.e.setAttribute("cy", f.y.toFixed(1)); f.e.setAttribute("opacity", (1 - f.life / f.max).toFixed(2));
+  }
+  glow.setAttribute("opacity", (.75 + .25 * Math.sin(T * 9) * Math.sin(T * 3.7) + (heat / tongues.length - .78) * .8).toFixed(2));
+
+  // anemometer spins with the real wind speed
+  anemoAngle += (0.5 + windKn * 0.22) * dt;
+  drawAnemo();
+  // the vane tail points downwind: flip it around the pole when the wind blows from the west
+  vane.setAttribute("transform", Math.sin(windDir * Math.PI / 180) < 0 ? "matrix(-1 0 0 1 1164 0)" : "");
+
+  // paraglider crosses the window every ~40 s
+  const u = (T % 40) / 40;
+  pg.setAttribute("transform", `translate(${(1230 + u * 300).toFixed(1)} ${(170 + Math.sin(T * .6) * 14 + u * 60).toFixed(1)}) rotate(${(Math.sin(T * .9) * 6).toFixed(1)})`);
+
+  // tv
+  for (const f of fighters) {
+    f.t += dt;
+    if (f.vy === 0 && R() < dt * .8) f.vy = -rr(50, 90);
+    f.vy += 260 * dt; f.y += f.vy * dt;
+    if (f.y > 642) { f.y = 642; f.vy = 0; }
+    f.x += Math.sin(f.t * 1.3) * 18 * dt;
+    f.x = Math.max(580, Math.min(650, f.x));
+    f.e.setAttribute("transform", `translate(${f.x.toFixed(1)} ${f.y.toFixed(1)})`);
+    f.txt.textContent = f.dmg + "%";
+  }
+  if (R() < dt * .35) smashHit();
+  if (gameFlash > 0) { gameFlash -= dt; $("game").setAttribute("opacity", Math.min(1, gameFlash * 2).toFixed(2)); }
+
+  // terminal
+  if (termHold > 0) termHold -= dt;
+  else {
+    termChar += dt * 26;
+    if (termChar >= LINES[termLine].length) { termChar = LINES[termLine].length; termHold = .6; if (termLine < LINES.length - 1) { termLine++; termChar = 0; } else { termLine = 0; termChar = 0; termHold = 2.5; } }
+  }
+  renderTerm();
+
+  // candle flicker
+  document.querySelectorAll(".flame").forEach((c, i) => c.setAttribute("transform", `translate(${i ? 350 : 326} ${i ? 486 : 468}) scale(${(1 + Math.sin(T * 13 + i) * .08).toFixed(3)} ${(1 + Math.sin(T * 17 + i * 2) * .12).toFixed(3)}) translate(${i ? -350 : -326} ${i ? -486 : -468})`));
+
+  if (!reduced) requestAnimationFrame(frame);
+}
+if (reduced) { frame(performance.now()); } else requestAnimationFrame(frame);
+
+/* ================= tooltip, pane, clicks ================= */
+const tip = $("tip"), pane = $("pane");
+document.querySelectorAll(".door, .deco").forEach(a => {
+  a.addEventListener("pointerenter", () => {
+    if (a.classList.contains("door")) { tip.querySelector("b").textContent = a.dataset.label + " →"; tip.querySelector("span").textContent = a.dataset.sub; }
+    else { const i = INFO[a.dataset.info]; tip.querySelector("b").textContent = i.t; tip.querySelector("span").textContent = a.dataset.info === "gamecube" ? "press it" : "click for a story"; }
+    tip.classList.add("on");
   });
-  // keyboard: Enter/Space on a token picks it, drop lands mid-field
-  document.querySelectorAll('.token').forEach(function (btn) {
-    btn.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        placeLure(btn.dataset.lure, W / 2, H / 2);
-        clearPicked();
-      }
-    });
-  });
+  a.addEventListener("pointerleave", () => tip.classList.remove("on"));
+});
+addEventListener("pointermove", e => { tip.style.left = e.clientX + "px"; tip.style.top = e.clientY + "px"; });
 
-  window.addEventListener('pointermove', function (e) {
-    pointer.x = e.clientX; pointer.y = e.clientY; pointer.seen = true;
-  });
-  window.addEventListener('pointerleave', function () { pointer.seen = false; });
+function openPane(key) {
+  const i = INFO[key];
+  pane.querySelector("h2").textContent = i.t;
+  pane.querySelector(".latin").textContent = i.l;
+  pane.querySelector("p").textContent = i.p;
+  const old = pane.querySelector("img"); if (old) old.remove();
+  if (key === "kite") { const im = document.createElement("img"); im.src = "img/kite-saintmalo.webp"; im.alt = "Kite mountainboarding on the beach at Saint-Malo"; pane.appendChild(im); }
+  pane.classList.add("open");
+}
+document.querySelectorAll(".deco").forEach(a => {
+  const act = () => {
+    const key = a.dataset.info;
+    if (key === "gamecube") smashHit(3);
+    openPane(key);
+  };
+  a.addEventListener("click", e => { e.preventDefault(); act(); });
+  a.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(); } });
+});
+pane.querySelector(".x").addEventListener("click", () => pane.classList.remove("open"));
+addEventListener("keydown", e => { if (e.key === "Escape") { pane.classList.remove("open"); list.classList.remove("open"); } });
+$("stage").addEventListener("click", e => { if (!e.target.closest(".deco")) pane.classList.remove("open"); });
 
-  // ---------- canvas: dust, trails, sparks ----------
-  var PALETTE = [[110, 168, 255], [180, 140, 232], [140, 238, 221], [255, 196, 107], [255, 157, 122]];
-  function initDust() {
-    dust = [];
-    var n = Math.min(56, Math.round(W * H / 26000));
-    for (var i = 0; i < n; i++) {
-      dust.push({
-        x: rand(0, W), y: rand(0, H),
-        vx: rand(-6, 6), vy: rand(-4, 4),
-        r: rand(0.8, 2.2), a: rand(0.12, 0.32),
-        rgb: PALETTE[i % PALETTE.length],
-        ph: rand(0, 6.28)
-      });
-    }
-  }
+const list = $("list"), listBtn = $("listBtn");
+listBtn.addEventListener("click", () => { const o = list.classList.toggle("open"); listBtn.setAttribute("aria-expanded", o); });
 
-  function drawFx(dt, t) {
-    ctx.clearRect(0, 0, W, H);
-    // dust
-    for (var i = 0; i < dust.length; i++) {
-      var d = dust[i];
-      d.x += d.vx * dt; d.y += (d.vy + Math.sin(t + d.ph) * 3) * dt;
-      if (d.x < -5) d.x = W + 5; if (d.x > W + 5) d.x = -5;
-      if (d.y < -5) d.y = H + 5; if (d.y > H + 5) d.y = -5;
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.r, 0, 6.2832);
-      ctx.fillStyle = 'rgba(' + d.rgb.join(',') + ',' + (d.a * (0.7 + 0.3 * Math.sin(t * 0.8 + d.ph))).toFixed(3) + ')';
-      ctx.fill();
-    }
-    // creature trails
-    creatures.forEach(function (c) {
-      var rgb = c.spec.rgb.join(',');
-      for (var j = 0; j < c.trail.length; j++) {
-        var p = c.trail[j];
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2 + 4 * p.life, 0, 6.2832);
-        ctx.fillStyle = 'rgba(' + rgb + ',' + (0.16 * p.life).toFixed(3) + ')';
-        ctx.fill();
-      }
-    });
-    // sparks
-    for (var s2 = sparks.length - 1; s2 >= 0; s2--) {
-      var sp = sparks[s2];
-      sp.y += sp.vy * dt; sp.life -= dt * 1.3;
-      if (sp.life <= 0) { sparks.splice(s2, 1); continue; }
-      ctx.beginPath();
-      ctx.arc(sp.x, sp.y, 1.6 + sp.life * 1.6, 0, 6.2832);
-      ctx.fillStyle = 'rgba(' + sp.rgb.join(',') + ',' + (0.55 * sp.life).toFixed(3) + ')';
-      ctx.fill();
-    }
-  }
-
-  // ---------- main loop ----------
-  function frame(now) {
-    if (!running) return;
-    var dt = Math.min((now - last) / 1000, 0.05);
-    last = now;
-    var t = now / 1000;
-    creatures.forEach(function (c) { update(c, dt, t); });
-    drawFx(dt, t);
-    rafId = requestAnimationFrame(frame);
-  }
-
-  function start() {
-    if (running) return;
-    running = true;
-    last = performance.now();
-    rafId = requestAnimationFrame(frame);
-  }
-  function stop() {
-    running = false;
-    cancelAnimationFrame(rafId);
-  }
-
-  document.addEventListener('visibilitychange', function () {
-    if (!body.classList.contains('play')) return;
-    if (document.hidden) stop(); else start();
-  });
-
-  function enterPlay() {
-    body.classList.add('play');
-    resize();
-    if (!creatures.length) initCreatures();
-    resize(); // sizes valid only once absolutely positioned
-    initDust();
-    start();
-  }
-  function exitPlay() {
-    stop();
-    removeLure(true);
-    body.classList.remove('play');
-    creatures.forEach(function (c) {
-      c.el.style.transform = '';
-      c.inner.style.transform = '';
-      c.el.classList.remove('excited', 'armed');
-    });
-    ctx.clearRect(0, 0, W, H);
-  }
-
-  window.addEventListener('resize', function () {
-    if (body.classList.contains('play')) { resize(); initDust(); }
-  });
-
-  function applyMotionPref() {
-    if (reduceMotion.matches) exitPlay(); else enterPlay();
-  }
-  if (reduceMotion.addEventListener) reduceMotion.addEventListener('change', applyMotionPref);
-  applyMotionPref();
-})();
+// narrow screens: start the sideways-scrolling room centred on the shelf
+const stage = $("stage");
+if (stage.scrollWidth > stage.clientWidth) stage.scrollLeft = (stage.scrollWidth - stage.clientWidth) * .45;
 </script>
 </body>
 </html>
