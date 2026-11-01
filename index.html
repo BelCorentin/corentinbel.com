@@ -147,9 +147,18 @@
   <linearGradient id="tvScreen" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#2a1d5c"/><stop offset=".6" stop-color="#4b2f7a"/><stop offset="1" stop-color="#11243f"/>
   </linearGradient>
-  <linearGradient id="boardG" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0" stop-color="#1f8a86"/><stop offset=".5" stop-color="#2fb3a8"/><stop offset="1" stop-color="#1b7672"/>
+  <linearGradient id="boardRail" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#0f5552"/><stop offset=".5" stop-color="#16736e"/><stop offset="1" stop-color="#0c4441"/>
   </linearGradient>
+  <linearGradient id="boardDeck" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#2cb3a6"/><stop offset=".35" stop-color="#4fd1c2"/><stop offset=".7" stop-color="#2aa89c"/><stop offset="1" stop-color="#1d8a80"/>
+  </linearGradient>
+  <linearGradient id="wingG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4a525d"/><stop offset=".5" stop-color="#262a31"/><stop offset="1" stop-color="#15171b"/>
+  </linearGradient>
+  <pattern id="padPattern" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <path d="M0 0 V10" stroke="#0e1014" stroke-width="2.2"/>
+  </pattern>
   <linearGradient id="terracotta" x1="0" y1="0" x2="1" y2="0">
     <stop offset="0" stop-color="#9b4a2c"/><stop offset=".45" stop-color="#c8693f"/><stop offset="1" stop-color="#8a3f25"/>
   </linearGradient>
@@ -239,7 +248,7 @@
 </g>
 
 <!-- framed photo above the mantle -->
-<a class="deco" data-info="kite" tabindex="0" role="button" aria-label="Photo: mountainboard kiting in Saint-Malo">
+<g class="prop">
 <g>
   <rect x="140" y="288" width="160" height="126" rx="4" fill="url(#brass)" class="ink"/>
   <rect x="152" y="300" width="136" height="102" fill="#203040"/>
@@ -247,7 +256,7 @@
   <path d="M220 262 L150 290 M220 262 L290 290" stroke="#c9a253" stroke-width="2"/>
   <circle cx="220" cy="262" r="4" fill="url(#brass)" class="thin"/>
 </g>
-</a>
+</g>
 
 <!-- candles on the mantle -->
 <g id="candles">
@@ -260,7 +269,7 @@
 </g>
 
 <!-- seashells on the mantle -->
-<a class="deco" data-info="shells" tabindex="0" role="button" aria-label="Seashells">
+<g class="prop">
 <g>
   <path d="M232 520 q-22 -2 -24 -22 q12 -14 24 -14 q12 0 24 14 q-2 20 -24 22z" fill="#f2c9a8" class="thin"/>
   <path d="M232 520 L216 500 M232 520 L224 492 M232 520 L232 488 M232 520 L240 492 M232 520 L248 500" stroke="#b9775a" stroke-width="1.4"/>
@@ -269,7 +278,7 @@
   <ellipse cx="200" cy="514" rx="9" ry="6" fill="#e9b5a0" class="thin"/>
   <path d="M193 514 h14" stroke="#7b4a3a" stroke-width="1.2"/>
 </g>
-</a>
+</g>
 
 <!-- cherry blossom vase on the mantle (generated) -->
 <a class="deco" data-info="cherry" tabindex="0" role="button" aria-label="Cherry blossom">
@@ -295,7 +304,7 @@
 </g>
 
 <!-- ================= sitar leaning between fireplace and shelf ================= -->
-<a class="deco" data-info="sitar" tabindex="0" role="button" aria-label="Sitar">
+<g class="prop">
 <g id="sitar">
   <g transform="translate(-14 0) rotate(5 445 820)">
     <!-- neck -->
@@ -319,7 +328,7 @@
     <path d="M440 760 v72 M452 760 v72" stroke="#e8d7a8" stroke-width="1" opacity=".8"/>
   </g>
 </g>
-</a>
+</g>
 
 <!-- ---- bottom row: books ---- -->
 <g id="books"></g>
@@ -352,7 +361,7 @@
 </a>
 
 <!-- ---- row 1 right: Faker's trophy ---- -->
-<a class="deco" data-info="faker" tabindex="0" role="button" aria-label="Trophy for Faker">
+<g class="prop">
 <g>
   <rect x="908" y="312" width="104" height="18" rx="2" fill="#2a2a30" class="ink"/>
   <rect x="918" y="296" width="84" height="18" rx="2" fill="#3a3a42" class="ink"/>
@@ -364,7 +373,7 @@
   <path d="M942 214 q4 30 18 44" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="3"/>
   <g id="trophyStars" fill="#ffd34a" stroke="#7a5a10" stroke-width=".8"></g>
 </g>
-</a>
+</g>
 
 <!-- ---- row 2 left: test tubes, flask, robot → lab ---- -->
 <a class="door" href="https://lab.corentinbel.com" data-label="the lab" data-sub="interactive experiments &amp; explainers">
@@ -424,7 +433,7 @@
 </a>
 
 <!-- ---- row 3 left: CRT tv with Smash + GameCube controller ---- -->
-<a class="deco" data-info="tv" tabindex="0" role="button" aria-label="CRT television">
+<g class="prop">
 <g>
   <rect x="536" y="574" width="180" height="128" rx="14" fill="#8b8478" class="ink"/>
   <rect x="542" y="580" width="146" height="114" rx="18" fill="#2a2724" class="ink"/>
@@ -446,7 +455,7 @@
   <path d="M694 644 h16 M694 650 h16 M694 656 h16 M694 662 h16" stroke="#4a453f" stroke-width="2"/>
   <rect x="556" y="702" width="20" height="13" fill="#4a453f" class="thin"/><rect x="676" y="702" width="20" height="13" fill="#4a453f" class="thin"/>
 </g>
-</a>
+</g>
 <a class="deco" data-info="gamecube" tabindex="0" role="button" aria-label="GameCube controller — press it">
 <g id="controller">
   <path d="M718 690 q-20 -60 -2 -30" fill="none" stroke="#2a2440" stroke-width="2.5"/>
@@ -461,7 +470,7 @@
 </a>
 
 <!-- ---- row 3 right: tabletop fountain, violets, heather ---- -->
-<a class="deco" data-info="fountain" tabindex="0" role="button" aria-label="Water fountain">
+<g class="prop">
 <g>
   <ellipse cx="893" cy="706" rx="54" ry="10" fill="#4a5560" class="ink"/>
   <path d="M839 690 h108 v14 q0 10 -54 10 q-54 0 -54 -10z" fill="#7a868f" class="ink"/>
@@ -475,7 +484,7 @@
   <path class="water" d="M893 614 q-20 -8 -30 26 M893 614 q20 -8 30 26" fill="none" stroke="#bfe8ff" stroke-width="2.5"/>
   <path class="water" d="M868 646 q-10 10 -14 42 M918 646 q10 10 14 42" fill="none" stroke="#bfe8ff" stroke-width="2.5"/>
 </g>
-</a>
+</g>
 <a class="deco" data-info="violet" tabindex="0" role="button" aria-label="Violets"><g id="violets"></g></a>
 <a class="deco" data-info="heather" tabindex="0" role="button" aria-label="Heather"><g id="heather"></g></a>
 
@@ -500,25 +509,49 @@
 <!-- ================= foil board + foil leaning on the shelf → downthewind ================= -->
 <a class="door" href="https://downthewind.com" data-label="downthewind" data-sub="downwind foil runs in France">
 <g>
-  <!-- board -->
-  <g transform="rotate(5 1170 850)">
-    <path d="M1170 852 q-36 0 -36 -40 V390 q0 -80 36 -150 q36 70 36 150 v422 q0 40 -36 40z" fill="url(#boardG)" class="ink"/>
-    <path d="M1150 420 q20 -10 40 0 V790 q-20 10 -40 0z" fill="#16181c"/>
-    <path d="M1156 380 h28" stroke="#16181c" stroke-width="6" stroke-linecap="round"/>
-    <path d="M1170 252 q20 50 24 120" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="3"/>
-    <text x="0" y="0" transform="translate(1180 330) rotate(90)" font-family="Inter, sans-serif" font-weight="600" font-size="11" fill="#e8fff8" letter-spacing="1">7'2</text>
+  <!-- soft shadow on the wall -->
+  <path d="M1196 852 l34 -500 q14 -40 40 -20 l-20 520z" fill="#000" opacity=".28" filter="url(#blur6)"/>
+  <!-- downwind board leaning on the wall, deck facing us -->
+  <g transform="rotate(4 1190 852)">
+    <path id="boardShape" d="M1138 834 q0 18 20 18 h64 q20 0 20 -18 V520 q0 -150 -52 -210 q-52 60 -52 210z" fill="url(#boardRail)" class="ink"/>
+    <path d="M1148 826 q0 14 14 14 h56 q14 0 14 -14 V522 q0 -138 -42 -194 q-42 56 -42 194z" fill="url(#boardDeck)"/>
+    <!-- nose stripe -->
+    <path d="M1160 400 q30 -10 60 0 l-4 16 q-26 -8 -52 0z" fill="#ffd166" opacity=".95"/>
+    <text x="1190" y="452" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="600" font-size="15" fill="#0f3d3a" opacity=".8">dtw</text>
+    <!-- carry handle -->
+    <rect x="1178" y="566" width="24" height="9" rx="4.5" fill="#0d2624" class="thin"/>
+    <!-- traction pad with diamond grooves -->
+    <path d="M1152 620 h76 V810 q0 18 -18 18 h-40 q-18 0 -18 -18z" fill="#22262d" class="thin"/>
+    <path d="M1152 620 h76 V810 q0 18 -18 18 h-40 q-18 0 -18 -18z" fill="url(#padPattern)"/>
+    <path d="M1158 812 q32 -16 64 0" fill="none" stroke="#3a4048" stroke-width="7" stroke-linecap="round"/>
+    <!-- footstrap inserts -->
+    <g fill="#9aa3ad"><circle cx="1168" cy="680" r="2.4"/><circle cx="1212" cy="680" r="2.4"/><circle cx="1168" cy="760" r="2.4"/><circle cx="1212" cy="760" r="2.4"/></g>
+    <!-- gloss -->
+    <path d="M1152 520 q2 -120 34 -180" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="5" stroke-linecap="round"/>
+    <path d="M1150 600 v180" stroke="#fff" stroke-opacity=".18" stroke-width="4" stroke-linecap="round"/>
   </g>
-  <!-- foil bolted under the board: mast sticks out sideways, wings stand vertical -->
-  <rect x="1196" y="668" width="14" height="40" rx="3" fill="#3a3f48" class="ink"/>
-  <path d="M1206 676 h104 l4 12 h-108z" fill="#1d1f24" class="ink"/>
-  <path d="M1212 680 h96" stroke="#fff" stroke-opacity=".15" stroke-width="2"/>
-  <path d="M1306 606 h14 v190 h-14z" fill="#2b2f36" class="ink"/>
-  <path d="M1262 800 q51 -20 102 0 q-6 10 -16 10 q-35 -8 -70 0 q-10 0 -16 -10z" fill="#1d1f24" class="ink"/>
-  <path d="M1286 606 q27 -12 54 0 q-4 7 -10 7 q-17 -5 -34 0 q-6 0 -10 -7z" fill="#1d1f24" class="ink"/>
-  <path d="M1272 801 q41 -14 82 0" fill="none" stroke="#2fb3a8" stroke-width="2"/>
+  <!-- foil standing on its wings, seen from the front quarter -->
+  <g id="foil">
+    <ellipse cx="1292" cy="856" rx="100" ry="8" fill="#000" opacity=".35" filter="url(#blur2)"/>
+    <!-- stabiliser, further back so higher and smaller -->
+    <path d="M1280 798 Q1320 818 1360 798 Q1320 806 1280 798z" fill="#2a2e35" class="ink"/>
+    <!-- fuselage running back from the front wing to the stab -->
+    <path d="M1288 842 L1320 806" stroke="#140b06" stroke-width="12" stroke-linecap="round"/>
+    <path d="M1288 842 L1320 806" stroke="#4a515b" stroke-width="7" stroke-linecap="round"/>
+    <!-- mast -->
+    <path d="M1294 604 h16 l2 218 h-18z" fill="#2a2e35" class="ink"/>
+    <path d="M1295 606 h5 l1 214 h-5z" fill="#7b8590"/>
+    <rect x="1280" y="594" width="44" height="12" rx="3" fill="#3a3f48" class="ink"/>
+    <g fill="#c9ced4"><circle cx="1288" cy="600" r="2"/><circle cx="1316" cy="600" r="2"/></g>
+    <!-- front wing: swept crescent, tips further back -->
+    <path d="M1196 830 Q1288 884 1380 830 Q1376 826 1370 828 Q1288 858 1202 828 Q1196 826 1196 830z" fill="url(#wingG)" class="ink"/>
+    <path d="M1206 836 Q1288 878 1370 836" fill="none" stroke="#2fb3a8" stroke-width="2.6"/>
+    <path d="M1230 838 Q1270 852 1300 852" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2"/>
+    <circle cx="1288" cy="852" r="3" fill="#9aa3ad"/>
+  </g>
   <!-- luggage tag on the mast -->
-  <path d="M1262 688 q-4 18 4 30" fill="none" stroke="#e8d7a8" stroke-width="1.6"/>
-  <g class="plaque" transform="rotate(-6 1290 730)"><rect x="1236" y="716" width="96" height="18" rx="3" fill="url(#brass)" class="thin"/><circle cx="1243" cy="725" r="2.2" fill="#3a2408"/><text x="1288" y="729" text-anchor="middle">downthewind</text></g>
+  <path d="M1311 650 q14 10 12 30" fill="none" stroke="#e8d7a8" stroke-width="1.6"/>
+  <g class="plaque" transform="rotate(-5 1334 690)"><rect x="1286" y="680" width="96" height="18" rx="3" fill="url(#brass)" class="thin"/><circle cx="1293" cy="689" r="2.2" fill="#3a2408"/><text x="1338" y="693" text-anchor="middle">downthewind</text></g>
 </g>
 </a>
 
@@ -527,7 +560,6 @@
 <a class="deco" data-info="mimosa" tabindex="0" role="button" aria-label="Mimosa"><g id="mimosa"></g></a>
 <a class="deco" data-info="almond" tabindex="0" role="button" aria-label="Almond blossom"><g id="almond"></g></a>
 <a class="deco" data-info="rose" tabindex="0" role="button" aria-label="Damask rose"><g id="rose"></g></a>
-<a class="deco" data-info="fireplace" tabindex="0" role="button" aria-label="Fireplace"><rect x="130" y="640" width="180" height="212" fill="transparent"/></a>
 
 <!-- ================= light ================= -->
 <circle id="glow" cx="220" cy="780" r="520" fill="url(#fireGlow)" pointer-events="none" style="mix-blend-mode:screen"/>
@@ -537,7 +569,7 @@
 
 <div id="tip"><b></b> <span></span></div>
 <aside id="pane" aria-live="polite"><button class="x" aria-label="close">×</button><h2></h2><div class="latin"></div><p></p></aside>
-<div class="hint"><span class="wide">hover the shelf · click plants &amp; things for stories</span><span class="narrow">swipe ← → · tap things</span></div>
+<div class="hint"><span class="wide">hover the shelf · click the plants for fun facts</span><span class="narrow">swipe ← → · tap things</span></div>
 
 <script>
 "use strict";
@@ -566,14 +598,7 @@ const INFO = {
   heather:   { t: "Bruyère", l: "Erica arborea", p: "Briar pipes are carved from the knotted root burl of tree heath, and the English word 'briar' comes straight from the French bruyère. The burl survives fires, which is what makes it so dense and heat-proof." },
   rose:      { t: "Rose de Damas", l: "Rosa × damascena", p: "The rose behind most rose oil. It takes roughly three to four tonnes of petals, picked at dawn before the sun burns the scent off, to distil one kilogram of oil in Bulgaria's Valley of Roses." },
   violet:    { t: "Violettes", l: "Viola odorata", p: "Their scent, ionone, briefly switches off the smell receptors that detect it. So you smell violets, lose them, and smell them again a moment later: a flower that flirts." },
-  sitar:     { t: "Sitar", l: "my other instrument", p: "Seventeen-ish strings, a gourd, and patience. The sitar tuner in the art section defaults to my own instrument's tuning." },
-  shells:    { t: "Seashells", l: "pocket souvenirs", p: "Picked up on the beaches I sail from. Every one of them is a reminder that the best days end with salt in your hair." },
-  fountain:  { t: "Water fountain", l: "white noise, handmade", p: "Running water is the best focus soundtrack there is. Decoding brains is easier with a small river nearby." },
-  faker:     { t: "Faker", l: "Lee Sang-hyeok", p: "Six stars for six World Championships with T1 (2013, 2015, 2016, 2023, 2024, 2025). The greatest League of Legends player ever, still at the top more than a decade later. Respect." },
-  tv:        { t: "Smash on a CRT", l: "the only correct way", p: "Super Smash Bros on a GameCube, on a fat cathode-ray TV with zero input lag. Press the controller next to it." },
-  gamecube:  { t: "GameCube controller", l: "the indigo one", p: "Press it again. And again." },
-  kite:      { t: "Saint-Malo", l: "kite + mountainboard", p: "Low tide, the walled city behind, a kite in hand and four wheels on the sand. When there is no water to foil on, there is still wind." },
-  fireplace: { t: "Fireplace", l: "the warm side of the room", p: "Every good evening ends here: a fire, a sitar, and a long argument about whether the brain is a language model." },
+  gamecube:  { t: "GameCube controller", l: "", p: "" },
 };
 
 /* ================= starry sky + tv stars ================= */
@@ -686,12 +711,12 @@ function branch(g, pts, width, color) {
 // hydrangea: floor pot right of the foil
 {
   const g = el("g", { class: "sway", style: "animation-delay:-1.5s" }, $("hydrangea"));
-  for (let i = 0; i < 18; i++) el("ellipse", { cx: rr(1356, 1440), cy: rr(735, 800), rx: rr(13, 18), ry: rr(8, 11), fill: pick(["#2f6b3a", "#3d7d44", "#28572f"]), class: "thin", transform: `rotate(${rr(-40, 40)} 1398 770)` }, g);
-  for (const [cx, cy, rad, cols] of [[1372, 742, 28, ["#6f8de8", "#8aa6f0", "#5a74d6", "#a7b8f5"]], [1420, 732, 30, ["#c084e0", "#d39cec", "#a96cd0", "#e2b6f3"]], [1396, 706, 26, ["#7fa0ee", "#b88ce6", "#9db4f3"]]]) {
+  for (let i = 0; i < 18; i++) el("ellipse", { cx: rr(1394, 1462), cy: rr(735, 800), rx: rr(13, 18), ry: rr(8, 11), fill: pick(["#2f6b3a", "#3d7d44", "#28572f"]), class: "thin", transform: `rotate(${rr(-40, 40)} 1430 770)` }, g);
+  for (const [cx, cy, rad, cols] of [[1406, 742, 28, ["#6f8de8", "#8aa6f0", "#5a74d6", "#a7b8f5"]], [1450, 732, 30, ["#c084e0", "#d39cec", "#a96cd0", "#e2b6f3"]], [1428, 706, 26, ["#7fa0ee", "#b88ce6", "#9db4f3"]]]) {
     el("circle", { cx, cy, r: rad, fill: cols[0], class: "thin" }, g);
     for (let k = 0; k < 34; k++) { const a = R() * 6.28, d = Math.sqrt(R()) * rad * .85; blossom(g, cx + Math.cos(a) * d, cy + Math.sin(a) * d, rr(4.5, 6.5), pick(cols), "#f4f0ff", R() * 6); }
   }
-  pot($("hydrangea"), 1398, 856, 70, 54);
+  pot($("hydrangea"), 1430, 856, 70, 54);
 }
 
 // mimosa: big floor pot far right, feathery green + yellow pompoms
@@ -919,7 +944,7 @@ const tip = $("tip"), pane = $("pane");
 document.querySelectorAll(".door, .deco").forEach(a => {
   a.addEventListener("pointerenter", () => {
     if (a.classList.contains("door")) { tip.querySelector("b").textContent = a.dataset.label + " →"; tip.querySelector("span").textContent = a.dataset.sub; }
-    else { const i = INFO[a.dataset.info]; tip.querySelector("b").textContent = i.t; tip.querySelector("span").textContent = a.dataset.info === "gamecube" ? "press it" : "click for a story"; }
+    else { const i = INFO[a.dataset.info]; tip.querySelector("b").textContent = i.t; tip.querySelector("span").textContent = a.dataset.info === "gamecube" ? "press it" : "click for a fun fact"; }
     tip.classList.add("on");
   });
   a.addEventListener("pointerleave", () => tip.classList.remove("on"));
@@ -932,13 +957,12 @@ function openPane(key) {
   pane.querySelector(".latin").textContent = i.l;
   pane.querySelector("p").textContent = i.p;
   const old = pane.querySelector("img"); if (old) old.remove();
-  if (key === "kite") { const im = document.createElement("img"); im.src = "img/kite-saintmalo.webp"; im.alt = "Kite mountainboarding on the beach at Saint-Malo"; pane.appendChild(im); }
   pane.classList.add("open");
 }
 document.querySelectorAll(".deco").forEach(a => {
   const act = () => {
     const key = a.dataset.info;
-    if (key === "gamecube") smashHit(3);
+    if (key === "gamecube") { smashHit(3); return; }
     openPane(key);
   };
   a.addEventListener("click", e => { e.preventDefault(); act(); });
