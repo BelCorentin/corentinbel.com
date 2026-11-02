@@ -174,6 +174,46 @@
   <radialGradient id="vignette" cx=".5" cy=".46" r=".75">
     <stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".62"/>
   </radialGradient>
+  <linearGradient id="dropShade" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="sideShadeL" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="sideShadeR" x1="1" y1="0" x2="0" y2="0">
+    <stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="spine" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".3" stop-color="#fff" stop-opacity="0"/><stop offset=".75" stop-color="#000" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity=".38"/>
+  </linearGradient>
+  <linearGradient id="fireLight" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#ff9a4a" stop-opacity=".22"/><stop offset=".6" stop-color="#ff9a4a" stop-opacity="0"/>
+  </linearGradient>
+  <pattern id="grainH" width="220" height="20" patternUnits="userSpaceOnUse">
+    <path d="M0 5 q55 -3 110 0 t110 0 M0 12 q40 2 80 0 t80 1 t60 -1 M20 16 q30 -2 60 0" fill="none" stroke="#1a0d05" stroke-opacity=".35" stroke-width="1"/>
+    <ellipse cx="150" cy="10" rx="9" ry="2.6" fill="none" stroke="#1a0d05" stroke-opacity=".3"/>
+  </pattern>
+  <pattern id="grainV" width="28" height="240" patternUnits="userSpaceOnUse">
+    <path d="M7 0 q-3 60 0 120 t0 120 M15 0 q2 50 0 100 t1 140 M22 0 q-2 80 0 160 t0 80" fill="none" stroke="#1a0d05" stroke-opacity=".33" stroke-width="1"/>
+  </pattern>
+  <pattern id="floorGrain" width="300" height="40" patternUnits="userSpaceOnUse">
+    <path d="M0 10 q75 -4 150 0 t150 0 M0 24 q60 3 120 0 t180 0" fill="none" stroke="#0e0703" stroke-opacity=".35"/>
+  </pattern>
+  <radialGradient id="fireBox" cx=".5" cy=".85" r=".8">
+    <stop offset="0" stop-color="#ff9a3a"/><stop offset=".35" stop-color="#9a3a14"/><stop offset="1" stop-color="#1a0805"/>
+  </radialGradient>
+  <linearGradient id="soot" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/>
+  </linearGradient>
+  <linearGradient id="wainscot" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#1d2a26"/><stop offset="1" stop-color="#141d1a"/>
+  </linearGradient>
+  <linearGradient id="foilTop" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#6b7480"/><stop offset=".55" stop-color="#3a4049"/><stop offset="1" stop-color="#22262c"/>
+  </linearGradient>
+  <linearGradient id="mastG" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8a939e"/><stop offset=".35" stop-color="#4a515b"/><stop offset="1" stop-color="#1d2026"/>
+  </linearGradient>
   <filter id="blur6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
   <filter id="blur2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.6"/></filter>
   <clipPath id="winClip"><rect x="1266" y="126" width="228" height="308"/></clipPath>
@@ -184,8 +224,13 @@
 <!-- ================= room shell (drawn wide so ultra-wide screens never see an edge) ================= -->
 <rect x="-1600" y="-1000" width="4800" height="1870" fill="url(#wallG)"/>
 <rect x="-1600" y="-1000" width="4800" height="1870" fill="url(#paper)"/>
+<rect x="-1600" y="690" width="4800" height="162" fill="url(#wainscot)"/>
+<g id="panels" fill="none" stroke="#0c1311" stroke-width="2"></g>
+<rect x="-1600" y="682" width="4800" height="12" fill="#2f241a" class="thin"/>
+<path d="M-1600 684 H3200" stroke="#6a4a30" stroke-width="1.5" opacity=".6"/>
 <rect x="-1600" y="850" width="4800" height="22" fill="#2a190e" class="ink"/>
 <rect x="-1600" y="872" width="4800" height="1200" fill="url(#floorG)"/>
+<rect x="-1600" y="872" width="4800" height="1200" fill="url(#floorGrain)"/>
 <g stroke="#140b06" stroke-opacity=".55" stroke-width="2">
   <path d="M-1600 905H3200M-1600 945H3200M-1600 992H3200"/>
   <path d="M120 872v33M470 872v33M860 872v33M1240 872v33M1560 872v33M300 905v40M690 905v40M1050 905v40M1420 905v40M90 945v47M520 945v47M960 945v47M1330 945v47"/>
@@ -227,12 +272,11 @@
 <!-- ================= fireplace (left) ================= -->
 <g id="fireplace">
   <rect x="60" y="540" width="320" height="312" fill="url(#stone)" class="ink"/>
-  <g stroke="#2e2924" stroke-width="2" opacity=".7">
-    <path d="M60 580h320M60 620h70M310 620h70M60 660h70M310 660h70M60 700h70M310 700h70M60 740h70M310 740h70M60 780h70M310 780h70M60 820h70M310 820h70"/>
-    <path d="M140 540v40M220 540v40M300 540v40M100 580v40M95 660v40M100 740v40M345 620v40M340 700v40M345 780v40"/>
-  </g>
+  <g id="bricksF"></g>
   <path d="M130 852 V700 Q130 640 220 640 Q310 640 310 700 V852z" fill="#0d0705" class="ink"/>
-  <path d="M146 852 V706 Q146 656 220 656 Q294 656 294 706 V852z" fill="#1a0c06"/>
+  <path d="M146 852 V706 Q146 656 220 656 Q294 656 294 706 V852z" fill="url(#fireBox)"/>
+  <path d="M146 760 V706 Q146 656 220 656 Q294 656 294 706 V760z" fill="#000" opacity=".35"/>
+  <path d="M120 640 Q220 600 320 640 V610 H120z" fill="url(#soot)" opacity=".8"/>
   <!-- logs -->
   <rect x="160" y="818" width="120" height="22" rx="11" fill="#5a3418" class="ink"/>
   <rect x="172" y="806" width="100" height="18" rx="9" fill="#6e4220" class="ink" transform="rotate(-8 222 815)"/>
@@ -289,6 +333,15 @@
 <g id="shelf">
   <rect x="516" y="158" width="588" height="690" fill="url(#backG)"/>
   <g stroke="#000" stroke-opacity=".25" stroke-width="2"><path d="M580 158v690M660 158v690M740 158v690M880 158v690M960 158v690M1040 158v690"/></g>
+  <!-- depth: shade under each plank and beside each post -->
+  <rect x="518" y="156" width="584" height="40" fill="url(#dropShade)"/>
+  <rect x="518" y="350" width="584" height="34" fill="url(#dropShade)"/>
+  <rect x="518" y="545" width="584" height="34" fill="url(#dropShade)"/>
+  <rect x="518" y="735" width="584" height="34" fill="url(#dropShade)"/>
+  <rect x="518" y="156" width="26" height="684" fill="url(#sideShadeL)"/>
+  <rect x="823" y="156" width="22" height="562" fill="url(#sideShadeL)"/>
+  <rect x="771" y="156" width="26" height="562" fill="url(#sideShadeR)"/>
+  <rect x="1076" y="156" width="26" height="684" fill="url(#sideShadeR)"/>
   <!-- posts -->
   <rect x="490" y="150" width="28" height="704" fill="url(#woodV)" class="ink"/>
   <rect x="1102" y="150" width="28" height="704" fill="url(#woodV)" class="ink"/>
@@ -301,7 +354,23 @@
   <rect x="468" y="126" width="684" height="30" rx="3" fill="url(#woodH)" class="ink"/>
   <rect x="480" y="118" width="660" height="10" rx="3" fill="#6a4126" class="ink"/>
   <rect x="478" y="840" width="664" height="30" rx="3" fill="url(#woodH)" class="ink"/>
+  <!-- grain + top-edge highlights -->
+  <g pointer-events="none">
+    <rect x="490" y="150" width="28" height="704" fill="url(#grainV)"/>
+    <rect x="1102" y="150" width="28" height="704" fill="url(#grainV)"/>
+    <rect x="797" y="158" width="26" height="560" fill="url(#grainV)"/>
+    <rect x="506" y="330" width="608" height="20" fill="url(#grainH)"/>
+    <rect x="506" y="525" width="608" height="20" fill="url(#grainH)"/>
+    <rect x="506" y="715" width="608" height="20" fill="url(#grainH)"/>
+    <rect x="468" y="126" width="684" height="30" fill="url(#grainH)"/>
+    <rect x="478" y="840" width="664" height="30" fill="url(#grainH)"/>
+    <path d="M508 332 H1112 M508 527 H1112 M508 717 H1112 M470 128 H1150 M480 842 H1140" stroke="#c48a58" stroke-opacity=".45" stroke-width="2"/>
+    <path d="M493 152 V852 M1105 152 V852 M800 160 V716" stroke="#c48a58" stroke-opacity=".3" stroke-width="2"/>
+    <rect x="490" y="150" width="640" height="720" fill="url(#fireLight)"/>
+  </g>
 </g>
+<!-- contact shadows of the objects standing on the planks -->
+<g id="contact" fill="#000" opacity=".5" filter="url(#blur2)"></g>
 
 <!-- ================= sitar leaning between fireplace and shelf ================= -->
 <g class="prop">
@@ -532,25 +601,28 @@
   </g>
   <!-- foil standing on its wings, seen from the front quarter -->
   <g id="foil">
-    <ellipse cx="1292" cy="856" rx="100" ry="8" fill="#000" opacity=".35" filter="url(#blur2)"/>
-    <!-- stabiliser, further back so higher and smaller -->
-    <path d="M1280 798 Q1320 818 1360 798 Q1320 806 1280 798z" fill="#2a2e35" class="ink"/>
-    <!-- fuselage running back from the front wing to the stab -->
-    <path d="M1288 842 L1320 806" stroke="#140b06" stroke-width="12" stroke-linecap="round"/>
-    <path d="M1288 842 L1320 806" stroke="#4a515b" stroke-width="7" stroke-linecap="round"/>
-    <!-- mast -->
-    <path d="M1294 604 h16 l2 218 h-18z" fill="#2a2e35" class="ink"/>
-    <path d="M1295 606 h5 l1 214 h-5z" fill="#7b8590"/>
-    <rect x="1280" y="594" width="44" height="12" rx="3" fill="#3a3f48" class="ink"/>
-    <g fill="#c9ced4"><circle cx="1288" cy="600" r="2"/><circle cx="1316" cy="600" r="2"/></g>
-    <!-- front wing: swept crescent, tips further back -->
-    <path d="M1196 830 Q1288 884 1380 830 Q1376 826 1370 828 Q1288 858 1202 828 Q1196 826 1196 830z" fill="url(#wingG)" class="ink"/>
-    <path d="M1206 836 Q1288 878 1370 836" fill="none" stroke="#2fb3a8" stroke-width="2.6"/>
-    <path d="M1230 838 Q1270 852 1300 852" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2"/>
-    <circle cx="1288" cy="852" r="3" fill="#9aa3ad"/>
+    <ellipse cx="1300" cy="860" rx="130" ry="9" fill="#000" opacity=".4" filter="url(#blur2)"/>
+    <!-- stabiliser (further back: higher, smaller) -->
+    <path d="M1274 800 Q1326 812 1376 798 Q1372 794 1366 795 Q1326 804 1282 795 Q1276 795 1274 800z" fill="url(#foilTop)" class="ink"/>
+    <!-- fuselage, tapering from the wing back to the stab -->
+    <path d="M1288 856 L1322 802 L1330 804 L1300 860z" fill="#3a3f48" class="ink"/>
+    <path d="M1292 852 L1323 804" stroke="#8a939e" stroke-width="1.5" opacity=".7"/>
+    <!-- mast: a long foil section, light leading edge -->
+    <path d="M1288 606 h24 l2 236 h-26z" fill="url(#mastG)" class="ink"/>
+    <path d="M1292 612 q-1 110 0 226" stroke="#c9d0d8" stroke-width="2" opacity=".6"/>
+    <!-- mast-to-fuselage fairing -->
+    <path d="M1286 830 q16 -10 30 0 q4 14 -14 18 q-18 -4 -16 -18z" fill="#2a2e35" class="ink"/>
+    <!-- top plate -->
+    <rect x="1276" y="596" width="48" height="12" rx="3" fill="#3a3f48" class="ink"/>
+    <g fill="#c9ced4"><circle cx="1284" cy="602" r="2"/><circle cx="1316" cy="602" r="2"/></g>
+    <!-- front wing: underside sliver, then the visible top surface -->
+    <path d="M1172 838 Q1300 892 1428 838 L1428 842 Q1300 898 1172 842z" fill="#14161a" class="thin"/>
+    <path d="M1172 838 Q1300 892 1428 838 Q1424 830 1416 830 Q1300 862 1184 830 Q1176 830 1172 838z" fill="url(#foilTop)" class="ink"/>
+    <path d="M1180 836 Q1300 884 1420 836" fill="none" stroke="#3fd0c4" stroke-width="2.4"/>
+    <path d="M1210 836 Q1260 856 1300 858" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>
   </g>
   <!-- luggage tag on the mast -->
-  <path d="M1311 650 q14 10 12 30" fill="none" stroke="#e8d7a8" stroke-width="1.6"/>
+  <path d="M1313 650 q14 10 12 30" fill="none" stroke="#e8d7a8" stroke-width="1.6"/>
   <g class="plaque" transform="rotate(-5 1334 690)"><rect x="1286" y="680" width="96" height="18" rx="3" fill="url(#brass)" class="thin"/><circle cx="1293" cy="689" r="2.2" fill="#3a2408"/><text x="1338" y="693" text-anchor="middle">downthewind</text></g>
 </g>
 </a>
@@ -614,6 +686,31 @@ function star(cx, cy, r, parent) {
 }
 for (let i = 0; i < 6; i++) star(925 + i * 14, 321.5, 5.4, $("trophyStars"));
 
+/* ================= fireplace bricks + wall panels ================= */
+{
+  const g = $("bricksF"), tones = ["#7a7168", "#6d655c", "#857b70", "#655d55", "#746a60"];
+  for (let r = 0; r < 8; r++) {
+    const y = 548 + r * 38, off = r % 2 ? 0 : 40;
+    for (let x = 60 - off; x < 380; x += 80) {
+      const x0 = Math.max(62, x + 2), x1 = Math.min(378, x + 78);
+      if (x1 - x0 < 6) continue;
+      el("rect", { x: x0, y: y + 1, width: x1 - x0, height: 34, rx: 3, fill: pick(tones), stroke: "#2e2924", "stroke-width": 1.5 }, g);
+      el("path", { d: `M${x0 + 3} ${y + 4} h${x1 - x0 - 6}`, stroke: "#fff", "stroke-opacity": .12, "stroke-width": 2 }, g);
+    }
+  }
+  el("path", { d: "M120 852 V700 Q120 624 220 624 Q320 624 320 700 V852", fill: "none", stroke: "#8f857a", "stroke-width": 16 }, g);
+  el("path", { d: "M120 852 V700 Q120 624 220 624 Q320 624 320 700 V852", fill: "none", stroke: "#2e2924", "stroke-width": 1.5, transform: "translate(0 0)" }, g);
+  for (const [x, y, w, h] of [[211, 618, 18, 18]]) el("rect", { x, y, width: w, height: h, rx: 2, fill: "#9a8f83", stroke: "#2e2924", "stroke-width": 1.5 }, g);
+  let d = "";
+  for (let x = -1640; x < 3200; x += 130) d += `M${x + 14} 708 h102 v128 h-102z`;
+  el("path", { d }, $("panels"));
+  el("path", { d: d.replace(/M(-?\d+) 708/g, (m, x) => `M${+x + 3} 711`), stroke: "#2c3d38", "stroke-width": 1.2, opacity: .7 }, $("panels"));
+}
+
+/* ================= contact shadows ================= */
+for (const [cx, cy, rx] of [[623, 331, 92], [749, 331, 40], [960, 331, 56], [596, 525, 70], [688, 525, 34], [760, 525, 30], [912, 525, 70], [1046, 525, 48], [626, 716, 92], [766, 714, 30], [893, 717, 58], [988, 716, 24], [1066, 716, 28], [582, 119, 26], [1080, 119, 26]])
+  el("ellipse", { cx, cy, rx, ry: 4 }, $("contact"));
+
 /* ================= books ================= */
 {
   const g = $("books"), cols = ["#7a2e2e", "#2e4a7a", "#3d6b4a", "#a87a3a", "#5a3a6e", "#2a5a62", "#8a5a2a", "#6e2a4a", "#c9b38a"];
@@ -625,6 +722,8 @@ for (let i = 0; i < 6; i++) star(925 + i * 14, 321.5, 5.4, $("trophyStars"));
     }
     const w = rr(14, 26), h = rr(70, 98), c = pick(cols);
     el("rect", { x, y: 840 - h, width: w, height: h, rx: 2, fill: c, class: "thin" }, g);
+    el("rect", { x, y: 840 - h, width: w, height: h, rx: 2, fill: "url(#spine)" }, g);
+    if (R() < .5) el("rect", { x: x + 3, y: 840 - h * .55, width: w - 6, height: 9, rx: 1, fill: "#140b06", opacity: .35 }, g);
     el("path", { d: `M${x + 3} ${840 - h + 12}h${w - 6}M${x + 3} ${840 - 14}h${w - 6}`, stroke: "#e8c37a", "stroke-width": 1.4, opacity: .7 }, g);
     x += w + rr(0, 2);
   }
@@ -711,7 +810,12 @@ function branch(g, pts, width, color) {
 // hydrangea: floor pot right of the foil
 {
   const g = el("g", { class: "sway", style: "animation-delay:-1.5s" }, $("hydrangea"));
-  for (let i = 0; i < 18; i++) el("ellipse", { cx: rr(1394, 1462), cy: rr(735, 800), rx: rr(13, 18), ry: rr(8, 11), fill: pick(["#2f6b3a", "#3d7d44", "#28572f"]), class: "thin", transform: `rotate(${rr(-40, 40)} 1430 770)` }, g);
+  for (let i = 0; i < 16; i++) {
+    const x = rr(1396, 1464), y = rr(760, 800), a = (x - 1430) * 2.2 + rr(-25, 25), L = rr(24, 34);
+    const lf = el("g", { transform: `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${a.toFixed(1)})` }, g);
+    el("path", { d: `M0 0 C${L * .45} ${-L * .2} ${L * .4} ${-L * .8} 0 ${-L} C${-L * .4} ${-L * .8} ${-L * .45} ${-L * .2} 0 0z`, fill: pick(["#2f6b3a", "#3d7d44", "#28572f"]), class: "thin" }, lf);
+    el("path", { d: `M0 -2 V${-L + 4}`, stroke: "#6fae5a", "stroke-width": 1.2 }, lf);
+  }
   for (const [cx, cy, rad, cols] of [[1406, 742, 28, ["#6f8de8", "#8aa6f0", "#5a74d6", "#a7b8f5"]], [1450, 732, 30, ["#c084e0", "#d39cec", "#a96cd0", "#e2b6f3"]], [1428, 706, 26, ["#7fa0ee", "#b88ce6", "#9db4f3"]]]) {
     el("circle", { cx, cy, r: rad, fill: cols[0], class: "thin" }, g);
     for (let k = 0; k < 34; k++) { const a = R() * 6.28, d = Math.sqrt(R()) * rad * .85; blossom(g, cx + Math.cos(a) * d, cy + Math.sin(a) * d, rr(4.5, 6.5), pick(cols), "#f4f0ff", R() * 6); }
