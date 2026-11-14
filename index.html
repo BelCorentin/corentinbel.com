@@ -110,7 +110,8 @@
 <div id="stage">
 <svg id="room" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A cosy room: a dark wood shelf with objects that lead to each part of the site, a fireplace, plants and a window at dusk">
 <defs>
-  <linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1">
+  <clipPath id="termClip"><rect x="557" y="219" width="132" height="84"/></clipPath>
+<linearGradient id="wallG" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="#14201f"/><stop offset=".75" stop-color="#1c2b29"/><stop offset="1" stop-color="#22302b"/>
   </linearGradient>
   <pattern id="paper" width="46" height="46" patternUnits="userSpaceOnUse">
@@ -456,7 +457,7 @@
   <!-- laptop -->
   <path d="M548 216 q0 -6 6 -6 h138 q6 0 6 6 v94 h-150z" fill="#2b2f36" class="ink"/>
   <rect x="557" y="219" width="132" height="84" rx="3" fill="#0b1712"/>
-  <text id="term" x="563" y="232" font-family="ui-monospace, Menlo, monospace" font-size="8.4" fill="#7dffb0"></text>
+  <text id="term" clip-path="url(#termClip)" x="563" y="232" font-family="ui-monospace, Menlo, monospace" font-size="8.4" fill="#7dffb0"></text>
   <rect x="557" y="219" width="132" height="84" fill="#7dffb0" opacity=".04"/>
   <path d="M530 330 l18 -20 h150 l18 20z" fill="#a9b0ba" class="ink"/>
   <path d="M556 318 h134" stroke="#6c737b" stroke-width="2" stroke-dasharray="5 3"/>
@@ -630,6 +631,23 @@
   <ellipse cx="880" cy="110" rx="60" ry="8" fill="#f0cf6a" class="ink"/>
   <path d="M862 84 q8 -6 18 -6" fill="none" stroke="#fff3c0" stroke-width="2.4" opacity=".7"/>
   <path d="M832 108 l-6 3 M852 113 l-2 4 M904 113 l2 4 M928 108 l6 3 M846 86 l-3 -2 M914 88 l3 -2" stroke="#a8842a" stroke-width="1.4"/>
+</g>
+</g>
+
+<!-- climbing holds bolted to the wall between the shelf and the window -->
+<g class="prop">
+<g transform="translate(1176 236) scale(1.35) translate(-1176 -236)">
+  <g fill="#000" opacity=".3" filter="url(#blur2)">
+    <ellipse cx="1174" cy="296" rx="14" ry="5"/><ellipse cx="1192" cy="262" rx="10" ry="4"/><ellipse cx="1166" cy="232" rx="12" ry="4"/><ellipse cx="1188" cy="202" rx="9" ry="4"/><ellipse cx="1170" cy="176" rx="11" ry="4"/>
+  </g>
+  <path d="M1160 290 q2 -14 16 -14 q12 2 12 12 q-2 8 -14 8 q-12 0 -14 -6z" fill="#e2685a" class="ink"/>
+  <path d="M1182 258 q4 -10 12 -8 q6 4 2 12 q-8 4 -14 -4z" fill="#ffd34a" class="ink"/>
+  <path d="M1154 228 q6 -10 16 -8 q8 4 4 12 l-16 0z" fill="#4ff0d0" class="ink"/>
+  <path d="M1180 200 q2 -8 10 -8 q8 2 6 10 q-8 4 -16 -2z" fill="#9b6bff" class="ink"/>
+  <path d="M1160 174 q4 -10 14 -8 q8 2 6 10 q-10 4 -20 -2z" fill="#ff8a3d" class="ink"/>
+  <g fill="#d8dee4" stroke="#140b06" stroke-width=".8"><circle cx="1175" cy="285" r="2"/><circle cx="1190" cy="255" r="1.6"/><circle cx="1166" cy="225" r="1.8"/><circle cx="1188" cy="197" r="1.6"/><circle cx="1170" cy="170" r="1.8"/></g>
+  <path d="M1162 284 q6 -4 12 -2 M1158 224 q6 -3 10 -2" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2"/>
+  <path d="M1188 300 l8 -3 l-6 8z" fill="#ffd34a" stroke="#140b06" stroke-width="1"/>
 </g>
 </g>
 
@@ -1042,12 +1060,12 @@ function smashHit(power = 1) {
 }
 
 /* ================= laptop terminal ================= */
-const LINES = ["$ python decode.py --sub 07", "loading MEG … 306 ch", "fitting ridge … done", "r = 0.12  (chance 0.00)", "$ git push", "✓ pushed to main", "$ check wind --spot frejus", "18 kn W · go foil", "$ ▍"];
+const LINES = ["$ python decode.py", "loading MEG… 306 ch", "fitting ridge… done", "r = 0.12 (chance 0)", "$ git push", "✓ pushed to main", "$ wind --spot frejus", "18 kn W · go foil", "$ ▍"];
 const term = $("term");
 let termLine = 0, termChar = 0, termHold = 0;
 function renderTerm() {
   term.textContent = "";
-  const shown = LINES.slice(Math.max(0, termLine - 7), termLine + 1);
+  const shown = LINES.slice(Math.max(0, termLine - 6), termLine + 1);
   shown.forEach((ln, i) => {
     const isLast = i === shown.length - 1;
     el("tspan", { x: 563, dy: i ? 10 : 0 }, term).textContent = isLast ? ln.slice(0, termChar) : ln;
