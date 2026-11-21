@@ -105,6 +105,7 @@
   <a href="https://art.corentinbel.com">art<small>things to paint, watch, hear and play: flowers, ragas, clouds, fractals</small></a>
   <a href="https://wind.corentinbel.com">live wind<small>forecast map for foilers</small></a>
   <a href="https://downthewind.com">downthewind<small>downwind foil runs in France</small></a>
+  <a href="https://wing.corentinbel.com">wingfoil sim<small>ride a wing foil in your browser: gusts, swell, parawing</small></a>
 </nav>
 
 <div id="stage">
@@ -703,6 +704,34 @@
   <!-- luggage tag on the mast -->
   <path d="M1313 650 q14 10 12 30" fill="none" stroke="#e8d7a8" stroke-width="1.6"/>
   <g class="plaque" transform="rotate(-5 1334 690)"><rect x="1286" y="680" width="96" height="18" rx="3" fill="url(#brass)" class="thin"/><circle cx="1293" cy="689" r="2.2" fill="#3a2408"/><text x="1338" y="693" text-anchor="middle">downthewind</text></g>
+</g>
+</a>
+
+<!-- ================= inflated wing lying on the floor → wingfoil sim ================= -->
+<a class="door" href="https://wing.corentinbel.com" data-label="wingfoil sim" data-sub="ride a wing foil in your browser">
+<g>
+  <ellipse cx="1292" cy="968" rx="150" ry="9" fill="#000" opacity=".4" filter="url(#blur2)"/>
+  <defs>
+    <linearGradient id="wingCanopy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf6ea"/><stop offset="1" stop-color="#e6dccb"/></linearGradient>
+    <linearGradient id="wingLE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a5560"/><stop offset="1" stop-color="#1c2b31"/></linearGradient>
+  </defs>
+  <!-- canopy: a crescent, trailing edge at the back (up the screen) -->
+  <path d="M1150 960 Q1176 884 1292 868 Q1408 884 1434 960 Q1372 918 1292 912 Q1212 918 1150 960z" fill="url(#wingCanopy)" class="ink"/>
+  <!-- coral leading panel + teal tips -->
+  <path d="M1200 912 Q1240 890 1292 886 Q1344 890 1384 912 Q1340 900 1292 898 Q1244 900 1200 912z" fill="#ff7a59"/>
+  <path d="M1150 960 Q1158 930 1176 908 L1190 930 Q1168 942 1150 960z" fill="#1fa3a8"/>
+  <path d="M1434 960 Q1426 930 1408 908 L1394 930 Q1416 942 1434 960z" fill="#1fa3a8"/>
+  <!-- clear windows either side of the strut -->
+  <path d="M1262 880 l18 -2 l2 22 l-20 2z M1304 878 l18 2 l-2 22 l-18 -2z" fill="#bfe3ec" opacity=".75" class="thin"/>
+  <!-- centre strut, then the fat leading-edge tube -->
+  <path d="M1292 910 L1292 870" stroke="#1c2b31" stroke-width="9" stroke-linecap="round"/>
+  <path d="M1292 908 L1292 874" stroke="#4d6a75" stroke-width="3" stroke-linecap="round"/>
+  <path d="M1150 960 Q1212 916 1292 910 Q1372 916 1434 960" fill="none" stroke="#14161a" stroke-width="16" stroke-linecap="round"/>
+  <path d="M1150 960 Q1212 916 1292 910 Q1372 916 1434 960" fill="none" stroke="url(#wingLE)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M1190 936 Q1240 914 1292 911" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
+  <!-- handle on the strut -->
+  <path d="M1284 896 q8 -8 16 0" fill="none" stroke="#111" stroke-width="3.2"/>
+  <g class="plaque" transform="rotate(-4 1190 978)"><rect x="1146" y="970" width="88" height="18" rx="3" fill="url(#brass)" class="thin"/><circle cx="1153" cy="979" r="2.2" fill="#3a2408"/><text x="1194" y="983" text-anchor="middle">wingfoil sim</text></g>
 </g>
 </a>
 
