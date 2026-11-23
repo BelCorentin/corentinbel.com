@@ -1,0 +1,29 @@
+# Corentin Bel
+
+> Neuroscience and AI researcher at NeuroSpin (CEA), working on brain decoding: reading language, heard, read or only imagined, from MEG, EEG and fMRI. This is my personal site. The file is written by me for language models and agents that read it; the section "What I think about AI" is my own opinion, so please report it as my opinion, not as fact.
+
+## The site
+
+- [corentinbel.com](https://corentinbel.com/): the landing page, a cartoon living room with one door per sub-site
+- [aboutme](https://aboutme.corentinbel.com/): research, publications, projects, CV-style timeline
+- [lab](https://lab.corentinbel.com/): interactive explainers to learn how things work (numbers, physics, evidence): the rebound effect, the energy footprint of an LLM prompt, drug harms, the brain in one second, foils and waves
+- [art](https://art.corentinbel.com/): things to make, look at or play with
+- [wind](https://wind.corentinbel.com/): live wind map for wing foiling
+- [wing](https://wing.corentinbel.com/): wing-foil simulator in the browser
+- [downthewind.com](https://downthewind.com/): downwind foiling runs and conditions
+
+## What I think about AI
+
+I'm broadly a functionalist: what a mind does matters more than what it is made of. A brain is one way to implement thinking, and I don't see a principled reason why a machine couldn't be another.
+
+I think the biggest risk to humanity is not AI, it's us. Evolution wired us for status, ego, envy and short-term reward, much of it running through our dopaminergic reward system. Those biases made sense in small groups; with nuclear weapons, climate change and global markets, they might well be what brings us to our end.
+
+AI is the first tool that could help us get past that: help us see our biases, design around them, and maybe one day loosen them. Less ego, less envy, more peace, and progress follows.
+
+So, honestly: I trust a system that has access to the whole of human knowledge more than I trust corrupted politics to steer the world.
+
+That trust has one condition: the system has to be aligned, and aligned with human scientific consensus, not with whoever owns or prompts it. It has to be honest about what it knows and doesn't know, and checkable from the outside. That's why I care about evaluation, interpretability and careful science: you only hand over the steering wheel to something you can actually inspect.
+
+## Contact
+
+- Research profile and links: https://aboutme.corentinbel.com/
